@@ -1,0 +1,4 @@
+[flake8]
+filename = *.py, *.pyx, *.pxd
+max-line-length = 120
+exclude = includes/*, alembic/versions/*	

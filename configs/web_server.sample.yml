@@ -1,0 +1,15 @@
+quart_secret_key: XXXXXXXXXXXXXXXXX
+quart_cookie_domain: rogerthat.domain.com
+quart_cookie_domain_debug: localhost
+quart_auth_pep: XXXXXXXXXXXXXXXXX
+quart_auth_csalt: some salt here
+quart_server_port: 10073
+
+web_root: api
+wss_root: wss
+
+accepted_user_agents_tv:
+- go-http-client/1.1
+
+api_allowed_keys:
+- apikey1
