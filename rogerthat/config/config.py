@@ -48,7 +48,7 @@ class ConfigSetup(no_setters):
     _api_allowed_keys = WebConfig['api_allowed_keys']
 
     # Trading View
-    _tradingview_data_fields = TVConfig['tradingview_data_fields']
+    _tradingview_descriptor_fields = TVConfig['tradingview_descriptor_fields']
 
 
 Config = ConfigSetup()

@@ -76,7 +76,7 @@ class web_request:
 
     def check_valid_json(self):
         return (self._json_data and
-                any(k in Config.tradingview_data_fields for k in list(self._json_data.keys())))
+                any(k in Config.tradingview_descriptor_fields for k in list(self._json_data.keys())))
 
     async def check_is_valid(self,
                              for_tv_api=None):

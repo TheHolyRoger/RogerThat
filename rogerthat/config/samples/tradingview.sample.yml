@@ -1,2 +1,2 @@
-tradingview_data_fields:
-  - event
+tradingview_descriptor_fields:
+  - name
