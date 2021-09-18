@@ -37,6 +37,7 @@ def generate_quart_secrets():
     config = load_config("web_server")
     config["quart_secret_key"] = secrets.token_urlsafe(16)
     config["quart_auth_pep"] = secrets.token_urlsafe(16)
+    config["quart_auth_csalt"] = secrets.token_urlsafe(8)
     save_config(config, "web_server")
 
 
