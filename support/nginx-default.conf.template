@@ -1,0 +1,7 @@
+server {
+  server_name ${HOSTNAME};
+
+  location /api/tv_webhook/ {
+    proxy_pass http://rogerthat:${API_PORT}/api/tv_webhook/;
+  }
+}

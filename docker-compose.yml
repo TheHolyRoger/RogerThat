@@ -1,0 +1,32 @@
+version: "3.9"
+   
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - ./configs/env_postgres.env
+  nginx:
+    image: nginx:latest
+    entrypoint: /nginx-entrypoint.sh
+    command: ["nginx", "-g", "daemon off;"]
+    env_file:
+      - ./configs/env_nginx.env
+    volumes:
+      - ./support/nginx-entrypoint.sh:/nginx-entrypoint.sh
+      - ./support/nginx-default.conf.template:/etc/nginx/conf.d/default.conf.template
+    ports:
+      - 80:80
+      - 443:443
+  rogerthat:
+    # build: .
+    image: rogerthat:latest
+    volumes:
+      - ./configs:/configs
+      - ./logs:/logs
+    ports:
+      - "10073:10073"
+    depends_on:
+      - db
+    command: ["/home/rogerthat/scripts/start_docker_compose.sh"]

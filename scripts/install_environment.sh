@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $(dirname $0)
+cd $(dirname $0)/..
 
 # Compatibility logic for older Anaconda versions.
 if [ "${CONDA_EXE} " == " " ]; then
@@ -16,7 +16,7 @@ if [ "${CONDA_EXE}_" == "_" ]; then
 fi
 
 CONDA_BIN=$(dirname ${CONDA_EXE})
-ENV_FILE=environment.yml
+ENV_FILE=support/environment.yml
 
 if ${CONDA_EXE} env list | egrep -qe "^rogerthat"; then
     ${CONDA_EXE} env update -f $ENV_FILE

@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 """
 Export a Conda environment with --from-history, but also append
 Pip-installed dependencies
@@ -149,12 +149,12 @@ def main():
     env_data_full = export_env()
     env_data_hist = export_env(history_only=True)
     old_env = None
-    if os.path.exists('environment.yml'):
-        with open('environment.yml', 'r') as fp:
+    if os.path.exists('support/environment.yml'):
+        with open('support/environment.yml', 'r') as fp:
             old_env = yaml.load(fp)
     env_data = _combine_env_data(env_data_full, env_data_hist, old_env)
     yaml.indent(sequence=2, offset=2)
-    with open('environment.yml', 'w') as fp:
+    with open('support/environment.yml', 'w') as fp:
         yaml.dump(env_data, fp)
     print('\n\nDone.\n\n')
 

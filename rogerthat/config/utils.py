@@ -9,16 +9,19 @@ from rogerthat.utils.yaml import (
 
 
 config_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "configs")
+config_sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "samples")
 
 
 def load_config(file, sample_mode=False):
+    dir_name = config_sample_dir if sample_mode else config_dir
     sample_files = ".sample" if sample_mode else ""
-    return load_yml_from_file(os.path.join(config_dir, f"{file}{sample_files}.yml"))
+    return load_yml_from_file(os.path.join(dir_name, f"{file}{sample_files}.yml"))
 
 
 def save_config(data, file, sample_mode=False):
+    dir_name = config_sample_dir if sample_mode else config_dir
     sample_files = ".sample" if sample_mode else ""
-    return save_yml_to_file(data, os.path.join(config_dir, f"{file}{sample_files}.yml"))
+    return save_yml_to_file(data, os.path.join(dir_name, f"{file}{sample_files}.yml"))
 
 
 def generate_api_key(existing_keys):
@@ -58,22 +61,28 @@ def update_conf_from_template(conf_file):
     save_config(sample_config, conf_file)
 
 
-def copy_fresh_templates():
-    for conf_file in os.listdir(config_dir):
-        if ".sample" in conf_file:
-            templ_conf = os.path.join(config_dir, conf_file)
+def copy_fresh_templates(safe=False):
+    configs_exist = False
+    for conf_file in os.listdir(config_sample_dir):
+        if ".sample" in conf_file or ".env" in conf_file:
+            templ_conf = os.path.join(config_sample_dir, conf_file)
             new_conf = os.path.join(config_dir, conf_file.replace(".sample", ""))
             if os.path.exists(new_conf):
+                if ".env" not in conf_file:
+                    configs_exist = True
+                if safe or ".env" in conf_file:
+                    continue
                 os.remove(new_conf)
             shutil.copy(templ_conf, new_conf)
-    delete_sample_api_key()
-    save_new_api_key()
-    generate_quart_secrets()
+    if not safe or not configs_exist:
+        delete_sample_api_key()
+        save_new_api_key()
+        generate_quart_secrets()
 
 
 def delete_existing_configs():
     for conf_file in os.listdir(config_dir):
-        if ".sample" not in conf_file:
+        if ".sample" not in conf_file and (".yml" in conf_file or ".env" in conf_file):
             os.remove(os.path.join(config_dir, conf_file))
 
 

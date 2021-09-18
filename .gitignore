@@ -4,13 +4,13 @@ __pycache__
 .ipynb_checkpoints
 *.pyc
 
+data/db
+
 cache/*
 !cache/.gitkeep
 cache_*
 *.bak*
 
 logs/
-configs/database.yml
-configs/main_config.yml
-configs/tradingview.yml
-configs/web_server.yml
+configs/*.yml
+configs/*.env

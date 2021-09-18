@@ -1,5 +1,0 @@
-database_host: localhost
-database_name: db_name
-database_user_root: postgres
-database_user: postgres
-database_password: XXXXXXXXXXXXXXXXX

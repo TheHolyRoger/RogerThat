@@ -1,0 +1,5 @@
+database_host: db
+database_name: rogerthat
+database_user_root: postgres
+database_user: postgres
+database_password: postgres
