@@ -2,7 +2,10 @@
 import os
 import sys
 from rogerthat.utils.class_helpers import no_setters
-from rogerthat.config.utils import load_config
+from rogerthat.config.utils import (
+    load_config,
+    copy_fresh_templates,
+)
 
 
 try:
@@ -10,8 +13,9 @@ try:
     DBConfig = load_config("database")
     TVConfig = load_config("tradingview")
     WebConfig = load_config("web_server")
-except ModuleNotFoundError:
-    print("\n\nConfigs not created yet. Shutting Down.\n\n")
+except (ModuleNotFoundError, FileNotFoundError):
+    copy_fresh_templates()
+    print("\n\nConfigs not created yet. Generating fresh files and shutting Down.\n\n")
     sys.exit(1)
 
 
