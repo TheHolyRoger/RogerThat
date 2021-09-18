@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $(dirname $0)/..
+cd $(dirname $0)/
 
 # Compatibility logic for older Anaconda versions.
 if [ "${CONDA_EXE} " == " " ]; then
@@ -18,4 +18,4 @@ fi
 CONDA_BIN=$(dirname ${CONDA_EXE})
 source "${CONDA_BIN}/activate" rogerthat
 
-~/scripts/wait-for-it.sh db:5432 -- scripts/setup.py -s && sleep 10 && bin/start_rogerthat.py
+~/wait-for-it.sh db:5432 -- scripts/setup.py -s && sleep 10 && bin/start_rogerthat.py

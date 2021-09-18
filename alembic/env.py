@@ -18,7 +18,10 @@ from rogerthat.config.config import Config  # noqa: E402
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 alembic_config = context.config
-DB_URL = f"postgresql://{Config.database_user}:{Config.database_password}@{Config.database_host}/{Config.database_name}"
+DB_URL = "postgresql://{0}:{1}@{2}/{3}".format(Config.database_user,
+                                               Config.database_password,
+                                               Config.database_host,
+                                               Config.database_name)
 alembic_config.set_main_option('sqlalchemy.url', DB_URL)
 
 # Interpret the config file for Python logging.

@@ -21,7 +21,7 @@ cd RogerThat
 
 Then run the following command to build and run the docker image:
 ```bash
-./scripts/install_docker.sh
+./scripts/start_docker.sh
 ```
 
 Edit the HOSTNAME to listen on for the public TradingView webhook in the `./configs/env_nginx.env` file.
@@ -122,6 +122,12 @@ var ws = new WebSocket('ws://localhost:10073/wss');
 ws.onmessage = function (event) {
     console.log(event.data);
 };
+```
+
+Or run the python test listener:
+
+```bash
+python tests/test_websocket.py
 ```
 
 Or test the REST url here:

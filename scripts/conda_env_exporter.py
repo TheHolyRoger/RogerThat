@@ -79,8 +79,19 @@ def _filter_pip_deps(dep):
     return not dep.startswith(pkgs_to_remove)
 
 
+def _remove_pip_version(dep):
+    pkgs_to_strip = (
+        'psycopg2',
+    )
+    if dep.startswith(pkgs_to_strip):
+        return dep.split("==")[0]
+    else:
+        return dep
+
+
 def _clean_pip_deps(deps):
-    return [dep for dep in deps if _filter_pip_deps(dep)]
+    filtered = [dep for dep in deps if _filter_pip_deps(dep)]
+    return [_remove_pip_version(dep) for dep in filtered]
 
 
 def _get_pip_deps(full_deps):

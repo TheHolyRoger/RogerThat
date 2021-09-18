@@ -4,7 +4,7 @@ FROM ubuntu:20.04 AS builder
 # Install linux dependencies
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y gcc \
-        build-essential pkg-config libusb-1.0 curl git \
+        build-essential pkg-config libusb-1.0 curl git libpq-dev \
         sudo && \
     rm -rf /var/lib/apt/lists/*
 
@@ -40,6 +40,8 @@ COPY --chown=rogerthat:rogerthat bin/ bin/
 COPY --chown=rogerthat:rogerthat rogerthat/ rogerthat/
 COPY --chown=rogerthat:rogerthat scripts/ scripts/
 COPY --chown=rogerthat:rogerthat alembic.ini .
+COPY --chown=rogerthat:rogerthat support/start_docker_compose.sh .
+COPY --chown=rogerthat:rogerthat support/wait-for-it.sh .
 COPY --chown=rogerthat:rogerthat LICENSE .
 COPY --chown=rogerthat:rogerthat README.md .
 

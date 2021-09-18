@@ -27,10 +27,12 @@ class wss_request:
             await logger.log(f"Websocket data received: {data}")
             # await asyncio.sleep(10)
 
-    async def process_wss(self):
+    async def process_wss(self, tradingview_event=None):
         await logger.log("New websocket client connected.")
         producer = asyncio.create_task(self.sending())
         consumer = asyncio.create_task(self.receiving())
+        if tradingview_event:
+            await self._ws_queue.put(tradingview_event.to_json)
         return await asyncio.gather(producer, consumer)
 
     def __repr__(self):

@@ -36,28 +36,36 @@ class database_init():
         await db.log("Database does not exist yet, creating.")
         async with db.engine_root.connect() as conn:
             await conn.execute(text(f"CREATE DATABASE {Config.database_name}"))
+        return True
 
     @classmethod
     async def create_tables(cls):
-        await db.log("Creating tables.")
+        await db.log("Creating new or missing db tables.")
         async with db.engine.begin() as conn:
             await conn.run_sync(cls._meta.create_all)
+        return True
 
     @classmethod
     async def initialise(cls):
         try:
             await cls.create_tables()
         except Exception:
+            await db.log("Failed to create tables.")
             await cls.create_db()
             await cls.create_tables()
 
-        current_revision = await cls.alembic_current_rev(cls._alembic_cfg)
+        try:
+            current_revision = await cls.alembic_current_rev(cls._alembic_cfg)
+        except Exception as e:
+            await db.log(f"Alembic exception: {e}")
+            current_revision = []
         if len(current_revision) == 0:
             await db.log("First time init, stamping revision.")
             alembic_cmd.stamp(cls._alembic_cfg, "head")
         else:
             await db.log("Running alembic migration.")
             alembic_cmd.upgrade(cls._alembic_cfg, "head")
+        return True
 
     # async def wipe_and_create_db(cls):
     #     """

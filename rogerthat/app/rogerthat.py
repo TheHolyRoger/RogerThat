@@ -16,3 +16,5 @@ class RogerThat:
     async def Initialise(self):
         await logger.log("Initialising database.")
         await database_init.initialise()
+        await logger.log("Finished initialising database.")
+        await logger.log("Roger That.")

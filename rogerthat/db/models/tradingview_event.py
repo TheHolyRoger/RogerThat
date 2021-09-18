@@ -101,7 +101,6 @@ class tradingview_event(db_model_base,
                 stmt = (select(cls)
                         .limit(1)
                         .order_by(cls.timestamp_recieved.desc()))
-                print(stmt)
                 result = (await session.execute(stmt)).fetchone()
                 if result:
                     result = result[0]

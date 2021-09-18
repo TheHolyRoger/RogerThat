@@ -31,5 +31,6 @@ class wss_handlers_hummingbot:
         request = wss_request(from_quart=ws_request, ws_queue=ws_queue)
         valid_request = request.check_auth()
         if valid_request:
-            await request.process_wss()
+            latest_event = await tradingview_event.fetch_latest()
+            await request.process_wss(latest_event)
         return abort(401)
