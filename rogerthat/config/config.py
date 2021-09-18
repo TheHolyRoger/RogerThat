@@ -45,7 +45,8 @@ class ConfigSetup(no_setters):
 
     # Security
     _accepted_user_agents_tv = WebConfig['accepted_user_agents_tv']
-    _api_allowed_keys = WebConfig['api_allowed_keys']
+    _api_allowed_keys_tv = WebConfig['api_allowed_keys_tv']
+    _api_allowed_keys_hbot = WebConfig['api_allowed_keys_hbot']
 
     # Trading View
     _tradingview_descriptor_fields = TVConfig['tradingview_descriptor_fields']

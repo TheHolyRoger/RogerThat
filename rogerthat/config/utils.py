@@ -40,16 +40,29 @@ def generate_quart_secrets():
     save_config(config, "web_server")
 
 
-def delete_sample_api_key():
+def delete_sample_api_key_hbot():
     config = load_config("web_server")
-    config["api_allowed_keys"].pop(0)
+    config["api_allowed_keys_hbot"].pop(0)
     save_config(config, "web_server")
 
 
-def save_new_api_key():
+def delete_sample_api_key_tv():
     config = load_config("web_server")
-    newkey = generate_api_key(config["api_allowed_keys"])
-    config["api_allowed_keys"].append(newkey)
+    config["api_allowed_keys_tv"].pop(0)
+    save_config(config, "web_server")
+
+
+def save_new_api_key_tv():
+    config = load_config("web_server")
+    newkey = generate_api_key(config["api_allowed_keys_tv"])
+    config["api_allowed_keys_tv"].append(newkey)
+    save_config(config, "web_server")
+
+
+def save_new_api_key_hbot():
+    config = load_config("web_server")
+    newkey = generate_api_key(config["api_allowed_keys_hbot"])
+    config["api_allowed_keys_hbot"].append(newkey)
     save_config(config, "web_server")
 
 
@@ -75,8 +88,10 @@ def copy_fresh_templates(safe=False):
                 os.remove(new_conf)
             shutil.copy(templ_conf, new_conf)
     if not safe or not configs_exist:
-        delete_sample_api_key()
-        save_new_api_key()
+        delete_sample_api_key_hbot()
+        delete_sample_api_key_tv()
+        save_new_api_key_tv()
+        save_new_api_key_hbot()
         generate_quart_secrets()
 
 

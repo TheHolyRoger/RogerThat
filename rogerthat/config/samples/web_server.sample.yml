@@ -11,5 +11,8 @@ wss_root: wss
 accepted_user_agents_tv:
 - go-http-client/1.1
 
-api_allowed_keys:
+api_allowed_keys_hbot:
+- apikey1
+
+api_allowed_keys_tv:
 - apikey1

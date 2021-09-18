@@ -44,8 +44,6 @@ class web_request:
 
     async def build_request_args(self):
         form_data = await self._quart_request.form
-        # print(form_data)
-        # print(self._quart_request.args)
         if len(form_data) > 0:
             self._request_args_data = form_data
         if len(self._quart_request.args) > 0:
@@ -53,8 +51,6 @@ class web_request:
                 self._request_args_data = {**self._request_args_data, **self._quart_request.args}
             else:
                 self._request_args_data = {**self._quart_request.args}
-        # print(f"Arg Type: {type(self._request_args_data)}")
-        # print(type(self._request_args_data[0]))
         if self._request_args_data:
             self._request_args_keys = list(self._request_args_data.keys())
         return True
@@ -69,33 +65,42 @@ class web_request:
     def check_valid_content_type(self):
         return self._content_type and self._content_type.startswith('application/json')
 
-    def check_valid_api_key(self):
+    def check_valid_api_key_tv(self):
         return (self._request_args_keys and
                 "api_key" in self._request_args_keys and
-                self._request_args_data["api_key"] in Config.api_allowed_keys)
+                self._request_args_data["api_key"] in Config.api_allowed_keys_tv)
+
+    def check_valid_api_key_hbot(self):
+        return (self._request_args_keys and
+                "api_key" in self._request_args_keys and
+                self._request_args_data["api_key"] in Config.api_allowed_keys_hbot)
 
     def check_valid_json(self):
         return (self._json_data and
                 any(k in Config.tradingview_descriptor_fields for k in list(self._json_data.keys())))
 
     async def check_is_valid(self,
-                             for_tv_api=None):
-        if not self.check_valid_user_agent():
+                             for_hbot_api=False,
+                             for_tv_api=False,):
+        if for_tv_api and not self.check_valid_user_agent():
             await logger.log("Invalid User Agent detected.")
             await self.log_request_full()
             return False
-        if not self.check_valid_content_type():
+        if for_tv_api and not self.check_valid_content_type():
             await logger.log("Invalid Content type detected.")
             await self.log_request_full()
             return False
         if not self._request_args_data:
             await self.build_request_args()
-        if not self.check_valid_api_key():
+        if for_tv_api and not self.check_valid_api_key_tv():
             await logger.log("Invalid api key detected.")
             return False
-        if not self._json_data:
+        if for_hbot_api and not self.check_valid_api_key_hbot():
+            await logger.log("Invalid api key detected.")
+            return False
+        if for_tv_api and not self._json_data:
             await self.build_json_data()
-        if self.check_valid_json():
+        if not for_tv_api or self.check_valid_json():
             return True
         else:
             await logger.log("Invalid json detected.")

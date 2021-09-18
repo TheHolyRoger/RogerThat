@@ -24,9 +24,12 @@ async def api_route_tv_webhook():
 #     print("before")
 
 
+@routes_main.route(f"/{Config.web_root}/hbot/", methods=['GET'])
+async def api_route_hummingbot():
+    return await make_response((await route_handlers.route_handler_hummingbot(request)), 200)
+
+
 @routes_main.websocket(f"/{Config.wss_root}")
 @ws_queue.collect_websocket
 async def api_wss_hbot(queue):
-    # websocket.headers
-    print("wss")
     return await route_handlers.wss_handler_hummingbot(websocket, queue)

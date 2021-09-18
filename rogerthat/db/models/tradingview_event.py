@@ -8,14 +8,15 @@ from sqlalchemy import (
     String,
 )
 from rogerthat.config.config import Config
-# from sqlalchemy.ext.asyncio import AsyncSession
-# from sqlalchemy.future import select
-# from rogerthat.db.engine import db
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from rogerthat.db.engine import db
 from rogerthat.db.models.base import (
     base_model,
     db_model_base,
 )
 from rogerthat.queues.ws_queue import ws_queue
+from rogerthat.utils.logger import logger
 
 
 class tradingview_event(db_model_base,
@@ -24,11 +25,13 @@ class tradingview_event(db_model_base,
     id = Column(BigInteger, primary_key=True, index=True, unique=True, autoincrement=True)
     timestamp_recieved = Column(BigInteger, index=True)
     timestamp_event = Column(BigInteger, index=True)
-    event_descriptor = Column(String(200), index=True)
-    command = Column(String(200), index=True)
-    exchange = Column(String(200), index=True)
+    event_descriptor = Column(String(100), index=True)
+    command = Column(String(100), index=True)
+    exchange = Column(String(90), index=True)
+    symbol = Column(String(30), index=True)
     price = Column(Numeric, index=True)
     volume = Column(Numeric, index=True)
+    inventory = Column(Numeric, index=True)
 
     def __init__(self,
                  from_json=None,
@@ -67,6 +70,7 @@ class tradingview_event(db_model_base,
                 break
 
     async def process_event(self):
+        await logger.log(f"Received event from TradingView: {self.to_dict}")
         await self.db_save()
         await ws_queue.broadcast(self.to_json)
 
@@ -87,3 +91,18 @@ class tradingview_event(db_model_base,
     @property
     def to_json(self):
         return ujson.dumps(self.to_dict)
+
+    @classmethod
+    async def fetch_latest(cls,):
+        result = None
+        async with AsyncSession(db.engine,
+                                expire_on_commit=False) as session:
+            async with session.begin():
+                stmt = (select(cls)
+                        .limit(1)
+                        .order_by(cls.timestamp_recieved.desc()))
+                print(stmt)
+                result = (await session.execute(stmt)).fetchone()
+                if result:
+                    result = result[0]
+        return result

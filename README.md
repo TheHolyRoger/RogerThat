@@ -4,10 +4,12 @@ RogerThat is a standalone webserver designed for use with tradingview webhooks a
 
 ## Installation
 
+### Source Installation
+
 Set up and activate the environment with the following command.
 
 ```bash
-./scripts/install_environment.sh
+./scripts/update_environment.sh
 ```
 
 Run the following command to generate the default configs:
@@ -19,12 +21,12 @@ Edit the configs in `./configs` or via the `setup.py` command.
 
 ### Docker Installation
 
-Edit the HOSTNAME in the `./configs/env_nginx.env` file.
-
-Run the following command to build the docker image:
+Run the following command to build and run the docker image:
 ```bash
-docker build -t rogerthat:latest
+./scripts/install_docker.sh
 ```
+
+Edit the HOSTNAME to listen on for the public TradingView webhook in the `./configs/env_nginx.env` file.
 
 ## Usage
 

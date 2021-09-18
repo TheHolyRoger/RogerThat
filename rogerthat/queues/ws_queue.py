@@ -1,5 +1,6 @@
 import asyncio
 from functools import wraps
+from rogerthat.utils.logger import logger
 
 
 class websockets_queue:
@@ -19,6 +20,7 @@ class websockets_queue:
         return wrapper
 
     async def broadcast(self, data):
+        await logger.log("Broadcasting message to all websocket queues.")
         for queue in self._connected_websockets:
             await queue.put(data)
 

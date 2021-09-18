@@ -1,6 +1,6 @@
 import asyncio
 # from rogerthat.config.config import Config
-# from rogerthat.utils.logger import logger
+from rogerthat.utils.logger import logger
 
 
 class wss_request:
@@ -15,7 +15,6 @@ class wss_request:
             self._auth = self._quart_request.authorization
 
     def check_auth(self):
-        print(self._auth)
         return True
 
     async def sending(self):
@@ -25,11 +24,11 @@ class wss_request:
     async def receiving(self):
         while True:
             data = await self._quart_request.receive()
-            print(data)
+            await logger.log(f"Websocket data received: {data}")
             # await asyncio.sleep(10)
 
     async def process_wss(self):
-        print("processing")
+        await logger.log("New websocket client connected.")
         producer = asyncio.create_task(self.sending())
         consumer = asyncio.create_task(self.receiving())
         return await asyncio.gather(producer, consumer)

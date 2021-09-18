@@ -14,10 +14,9 @@ class route_handlers_tradingview:
     async def route_handler_tradingview_webhook(self, quart_request):
         request = web_request(from_quart=quart_request)
         await request.build_request_args()
-        valid_request = await request.check_is_valid()
+        valid_request = await request.check_is_valid(for_tv_api=True)
         if valid_request:
             tv_event = tradingview_event(from_json=request.json_data)
             safe_ensure_future(tv_event.process_event())
             return jsonify({"success": True})
-        print(f"Accepted req: {valid_request}")
         return abort(401)
