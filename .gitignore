@@ -14,3 +14,6 @@ cache_*
 logs/
 configs/*.yml
 configs/*.env
+
+certs/server.crt
+certs/server.key

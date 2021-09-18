@@ -10,7 +10,7 @@ if [ "${CONDA_EXE} " == " " ]; then
 fi
 
 if [ "${CONDA_EXE}_" == "_" ]; then
-    echo "Please install Anaconda w/ Python 3.7+ first"
+    echo "Please install Miniconda w/ Python 3.7+ first"
     echo "See: https://www.anaconda.com/distribution/"
     exit 1
 fi

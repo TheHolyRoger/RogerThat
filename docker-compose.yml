@@ -11,11 +11,15 @@ services:
     image: nginx:latest
     entrypoint: /nginx-entrypoint.sh
     command: ["nginx", "-g", "daemon off;"]
+    depends_on:
+      - rogerthat
     env_file:
       - ./configs/env_nginx.env
     volumes:
       - ./support/nginx-entrypoint.sh:/nginx-entrypoint.sh
       - ./support/nginx-default.conf.template:/etc/nginx/conf.d/default.conf.template
+      - ./support/nginx-ssl.conf.template:/etc/nginx/conf.d/ssl.conf.template
+      - ./certs:/etc/nginx/rogerthat_certs
     ports:
       - 80:80
       - 443:443

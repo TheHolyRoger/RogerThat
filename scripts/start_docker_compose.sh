@@ -18,4 +18,4 @@ fi
 CONDA_BIN=$(dirname ${CONDA_EXE})
 source "${CONDA_BIN}/activate" rogerthat
 
-~/scripts/wait-for-it.sh db:5432 -- scripts/setup.py -s && bin/start_rogerthat.py
+~/scripts/wait-for-it.sh db:5432 -- scripts/setup.py -s && sleep 10 && bin/start_rogerthat.py

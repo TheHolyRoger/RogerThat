@@ -1,0 +1,10 @@
+server {
+  listen 443 ssl;
+  server_name ${HOSTNAME};
+  ssl_certificate /etc/nginx/rogerthat_certs/server.crt;
+  ssl_certificate_key /etc/nginx/rogerthat_certs/server.key;
+
+  location /api/tv_webhook/ {
+    proxy_pass http://rogerthat:${API_PORT}/api/tv_webhook/;
+  }
+}
