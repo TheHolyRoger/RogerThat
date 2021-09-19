@@ -1,3 +1,4 @@
+from rogerthat.route_handlers.handlers.main import route_handlers_main
 from rogerthat.route_handlers.handlers.hummingbot import (
     wss_handlers_hummingbot,
     route_handlers_hummingbot,
@@ -6,6 +7,7 @@ from rogerthat.route_handlers.handlers.tradingview import route_handlers_trading
 
 
 class route_handlers_ctrl(wss_handlers_hummingbot,
+                          route_handlers_main,
                           route_handlers_hummingbot,
                           route_handlers_tradingview):
     pass
