@@ -44,7 +44,7 @@ class tradingview_event(db_model_base,
                  volume=Dec("0"),
                  inventory=Dec("0"),
                  ):
-        self.timestamp_recieved = int(time.time())
+        self.timestamp_recieved = int(time.time() * 1000)
         self.timestamp_event = timestamp
         self.event_descriptor = event_descriptor
         self.command = command
