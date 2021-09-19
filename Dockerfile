@@ -39,8 +39,10 @@ COPY --chown=rogerthat:rogerthat alembic/ alembic/
 COPY --chown=rogerthat:rogerthat bin/ bin/
 COPY --chown=rogerthat:rogerthat rogerthat/ rogerthat/
 COPY --chown=rogerthat:rogerthat scripts/ scripts/
+COPY --chown=rogerthat:rogerthat tests/ tests/
 COPY --chown=rogerthat:rogerthat alembic.ini .
 COPY --chown=rogerthat:rogerthat support/start_docker_compose.sh .
+COPY --chown=rogerthat:rogerthat support/start_docker_python.sh .
 COPY --chown=rogerthat:rogerthat support/start_docker_setup_script.sh .
 COPY --chown=rogerthat:rogerthat support/wait-for-it.sh .
 COPY --chown=rogerthat:rogerthat LICENSE .
@@ -87,7 +89,7 @@ VOLUME /configs /logs /data /certs
 
 # Install packages required in runtime
 RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y sudo libusb-1.0 && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y sudo libusb-1.0 openssl && \
     rm -rf /var/lib/apt/lists/*
 
 # Switch to rogerthat user
@@ -102,5 +104,5 @@ COPY support/docker/etc /etc
 
 # Setting bash as default shell because we have .bashrc with customized PATH (setting SHELL affects RUN, CMD and ENTRYPOINT, but not manual commands e.g. `docker run image COMMAND`!)
 SHELL [ "/bin/bash", "-lc" ]
-RUN /home/rogerthat/miniconda3/envs/$(head -1 environment.yml | cut -d' ' -f2)/bin/python3 scripts/setup.py -s
-CMD /home/rogerthat/miniconda3/envs/$(head -1 environment.yml | cut -d' ' -f2)/bin/python3 bin/start_rogerthat.py
+RUN python scripts/setup.py -s
+CMD python bin/start_rogerthat.py

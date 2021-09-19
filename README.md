@@ -19,17 +19,30 @@ Change directory:
 cd RogerThat
 ```
 
-Then run the following command to build and run the docker image:
+Then run the following commands to build and run the docker image:
+
+Linux/Mac
 ```bash
 ./scripts/start_docker.sh
+```
+
+Windows
+```bash
+./scripts/start_docker.bat
 ```
 
 ### Running
 
 Run without re-building:
 
+Linux/Mac
 ```bash
 ./scripts/start_docker.sh -d
+```
+
+Windows
+```bash
+./scripts/start_docker.bat -d
 ```
 
 ### Enabling HTTPS
@@ -38,8 +51,13 @@ Place both your certificate and key in `./certs` folder named `server.crt` and `
 
 Or run the following command to generate a self-signed key pair (requires openssl):
 
+Linux/Mac
 ```bash
 scripts/generate_self_signed_cert.sh
+```
+Windows
+```bash
+scripts/generate_self_signed_cert.bat
 ```
 
 ### Public access
@@ -63,20 +81,28 @@ Services you can use for Dynamic DNS with a non-static public IP address are:
 
 You can use the config setup script via docker by running the following command:
 
+Linux/Mac
 ```bash
 scripts/start_docker_setup_script.sh --help
+```
+Windows
+```bash
+scripts/start_docker_setup_script.bat --help
 ```
 
 #### Change Hostname
 
 Change the hostname to listen on for the public TradingView webhook with the following command:
 
+Linux/Mac
 ```bash
 scripts/start_docker_setup_script.sh --hostname yourhostname.com
-```
-
-```bash
 scripts/start_docker_setup_script.sh --hostname 1.2.3.4
+```
+Windows
+```bash
+scripts/start_docker_setup_script.bat --hostname yourhostname.com
+scripts/start_docker_setup_script.bat --hostname 1.2.3.4
 ```
 
 ## Source
