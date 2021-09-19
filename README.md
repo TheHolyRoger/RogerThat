@@ -5,6 +5,8 @@ RogerThat is a standalone webserver designed for use with tradingview webhooks a
 ## Docker
 ### Installation
 
+[Install Miniconda](https://docs.conda.io/en/latest/miniconda.html) (or Anaconda)
+
 [Install Docker](https://docs.docker.com/get-docker/)
 
 Download and extract this [whole repository](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
