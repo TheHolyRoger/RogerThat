@@ -4,6 +4,7 @@ import path_util  # noqa: F401
 from rogerthat.config.utils import (
     save_new_api_key_tv,
     save_new_api_key_hbot,
+    save_new_hostname,
     generate_quart_secrets,
     copy_fresh_templates,
     delete_existing_configs,
@@ -21,6 +22,8 @@ def parse_args():
                         help="Delete existing configs.")
     parser.add_argument('--update-configs', '-u', dest="update_configs", action='store_true',
                         help="Update config files from templates.")
+    parser.add_argument('--hostname', dest="hostname", type=str,
+                        help="Update hostname.")
     parser.add_argument('--generate-api-key-tv', '-t', dest="generate_api_key_tv", action='store_true',
                         help="Generate and save a new TradingView api key to the config.")
     parser.add_argument('--generate-api-key-hbot', '-b', dest="generate_api_key_hbot", action='store_true',
@@ -44,5 +47,7 @@ if __name__ == "__main__":
         save_new_api_key_hbot()
     if args.generate_quart_secrets:
         generate_quart_secrets()
+    if args.hostname:
+        save_new_hostname(args.hostname)
     if args.update_configs:
         update_configs()

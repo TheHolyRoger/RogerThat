@@ -1,5 +1,5 @@
+server_host: localhost
 quart_secret_key: XXXXXXXXXXXXXXXXX
-quart_cookie_domain: rogerthat.domain.com
 quart_cookie_domain_debug: localhost
 quart_auth_pep: XXXXXXXXXXXXXXXXX
 quart_auth_csalt: some salt here

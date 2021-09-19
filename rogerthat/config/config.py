@@ -26,10 +26,10 @@ class ConfigSetup(no_setters):
     _debug_mode = AppConfig['debug_mode']
 
     # Web
+    _server_host = WebConfig['server_host']
     _web_root = WebConfig['web_root']
     _wss_root = WebConfig['wss_root']
     _quart_secret_key = WebConfig['quart_secret_key']
-    _quart_cookie_domain = WebConfig['quart_cookie_domain']
     _quart_cookie_domain_debug = WebConfig['quart_cookie_domain_debug']
     _quart_auth_pep = WebConfig['quart_auth_pep']
     _quart_auth_csalt = WebConfig['quart_auth_csalt']

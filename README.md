@@ -24,12 +24,12 @@ Then run the following command to build and run the docker image:
 ./scripts/start_docker.sh
 ```
 
-Edit the HOSTNAME to listen on for the public TradingView webhook in the `./configs/env_nginx.env` file.
-
 ### Running
 
+Run without re-building:
+
 ```bash
-docker compose up
+./scripts/start_docker.sh -d
 ```
 
 ### Enabling HTTPS
@@ -65,6 +65,18 @@ You can use the config setup script via docker by running the following command:
 
 ```bash
 scripts/start_docker_setup_script.sh --help
+```
+
+#### Change Hostname
+
+Change the hostname to listen on for the public TradingView webhook with the following command:
+
+```bash
+scripts/start_docker_setup_script.sh --hostname yourhostname.com
+```
+
+```bash
+scripts/start_docker_setup_script.sh --hostname 1.2.3.4
 ```
 
 ## Source

@@ -26,7 +26,7 @@ from rogerthat.utils.misc import (
 # Quart server stuff
 # *
 quart_server = Quart(f"{Config.app_name}/Rest/api")
-quart_server.config["QUART_AUTH_COOKIE_DOMAIN"] = Config.quart_cookie_domain
+quart_server.config["QUART_AUTH_COOKIE_DOMAIN"] = Config.server_host
 if Config.debug_mode:
     quart_server.config["QUART_AUTH_COOKIE_DOMAIN"] = Config.quart_cookie_domain_debug
 quart_server.config["QUART_AUTH_COOKIE_NAME"] = "HH_AUTH"

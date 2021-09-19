@@ -75,6 +75,34 @@ def update_conf_from_template(conf_file):
     save_config(sample_config, conf_file)
 
 
+def save_new_hostname(new_hostname):
+    config = load_config("web_server")
+    config["server_host"] = new_hostname
+    save_config(config, "web_server")
+    generate_env_nginx()
+
+
+def generate_env_postgres():
+    config = load_config("database")
+    pg_env_path = os.path.join(config_dir, "env_postgres.env")
+    pg_user = config["database_user"]
+    pg_pw = config["database_password"]
+    with open(pg_env_path, "w+") as fp:
+        fp.write("POSTGRES_DB=postgres\n")
+        fp.write(f"POSTGRES_USER={pg_user}\n")
+        fp.write(f"POSTGRES_PASSWORD={pg_pw}\n")
+
+
+def generate_env_nginx():
+    config = load_config("web_server")
+    nginx_env_path = os.path.join(config_dir, "env_nginx.env")
+    hostname = config["server_host"]
+    port = config["quart_server_port"]
+    with open(nginx_env_path, "w+") as fp:
+        fp.write(f"HOSTNAME={hostname}\n")
+        fp.write(f"API_PORT={port}\n")
+
+
 def copy_fresh_templates(safe=False):
     configs_exist = False
     for conf_file in os.listdir(config_sample_dir):
@@ -94,6 +122,8 @@ def copy_fresh_templates(safe=False):
         save_new_api_key_tv()
         save_new_api_key_hbot()
         generate_quart_secrets()
+    generate_env_postgres()
+    generate_env_nginx()
 
 
 def delete_existing_configs():
