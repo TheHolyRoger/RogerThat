@@ -2,8 +2,8 @@
 
 RogerThat is a standalone webserver designed for use with tradingview webhooks and forwarding them to hummingbot.
 
-## Docker
-### Installation
+# Docker
+## Installation
 
 [Install Docker](https://docs.docker.com/get-docker/)
 
@@ -21,46 +21,48 @@ cd RogerThat
 
 Then run the following commands to build and run the docker image:
 
-Linux/Mac
+<details>
+<summary>Linux/Mac</summary>
+
 ```bash
 ./scripts/start_docker.sh
 ```
+</details>
+<details>
+<summary>Windows</summary>
 
-Windows
 ```bash
 ./scripts/start_docker.bat
 ```
+</details>
 
-### Running
+___
+
+## Running
 
 Run without re-building:
 
-Linux/Mac
+<details>
+<summary>Linux/Mac</summary>
+
 ```bash
 ./scripts/start_docker.sh -d
 ```
+</details>
+<details>
+<summary>Windows</summary>
 
-Windows
 ```bash
 ./scripts/start_docker.bat -d
 ```
+</details>
 
-### Enabling HTTPS
+___
 
-Place both your certificate and key in `./certs` folder named `server.crt` and `server.key` ([LetsEncrypt](https://letsencrypt.org/getting-started/) is recommended).
+## Public access
 
-Or run the following command to generate a self-signed key pair (requires openssl):
-
-Linux/Mac
-```bash
-scripts/generate_self_signed_cert.sh
-```
-Windows
-```bash
-scripts/generate_self_signed_cert.bat
-```
-
-### Public access
+<details>
+<summary>Expand ...</summary>
 
 Since TradingView requires a publicly accessible URL for webhook alerts, you'll need to use your own domain name, or your public IP address.
 
@@ -77,36 +79,73 @@ Services you can use for Dynamic DNS with a non-static public IP address are:
 * [Duck DNS](https://duckdns.org/)
 * [Dynu](http://www.dynu.com/)
 
-### Configuration
+### Enabling HTTPS
 
-You can use the config setup script via docker by running the following command:
+Place both your certificate and key in `./certs` folder named `server.crt` and `server.key` ([LetsEncrypt](https://letsencrypt.org/getting-started/) is recommended).
+
+Or run the following command to generate a self-signed key pair:
 
 Linux/Mac
 ```bash
-scripts/start_docker_setup_script.sh --help
-```
-Windows
-```bash
-scripts/start_docker_setup_script.bat --help
+scripts/generate_self_signed_cert.sh
 ```
 
-#### Change Hostname
+Windows
+```bash
+scripts/generate_self_signed_cert.bat
+```
+</details>
+
+___
+
+## Configuration
+
+You can use the config setup script via docker by running the following commands:
+
+<details>
+<summary>Linux/Mac</summary>
+
+```bash
+scripts/setup_config.sh --help
+```
+</details>
+<details>
+<summary>Windows</summary>
+
+```bash
+scripts/setup_config.bat --help
+```
+</details>
+
+### Change Hostname
 
 Change the hostname to listen on for the public TradingView webhook with the following command:
 
-Linux/Mac
-```bash
-scripts/start_docker_setup_script.sh --hostname yourhostname.com
-scripts/start_docker_setup_script.sh --hostname 1.2.3.4
-```
-Windows
-```bash
-scripts/start_docker_setup_script.bat --hostname yourhostname.com
-scripts/start_docker_setup_script.bat --hostname 1.2.3.4
-```
+<details>
+<summary>Linux/Mac</summary>
 
-## Source
-### Installation
+```bash
+scripts/setup_config.sh --hostname yourhostname.com
+scripts/setup_config.sh --hostname 1.2.3.4
+```
+</details>
+<details>
+<summary>Windows</summary>
+
+```bash
+scripts/setup_config.bat --hostname yourhostname.com
+scripts/setup_config.bat --hostname 1.2.3.4
+```
+</details>
+
+___
+
+# Source
+
+<details>
+<summary>Source Installation Steps ...</summary>
+
+## Installation
 
 [Install Miniconda](https://docs.conda.io/en/latest/miniconda.html) (or Anaconda)
 
@@ -134,17 +173,22 @@ scripts/setup.py -s
 
 Edit the configs in `./configs` or via the `setup.py` command.
 
-### Running
+___
+
+## Running
 
 From source:
 
 ```bash
 bin/start_rogerthat.py
 ```
+</details>
 
-## Usage
+___
 
-### TradingView Webhooks
+# Usage
+
+## TradingView Webhooks
 
 Set up your TradingView alert URL like this:
 
@@ -154,14 +198,65 @@ http://<public-ip-or-domain-name>/api/tv_webhook/?api_key=<tradingview-apikey>
 
 Where `<public-ip-or-domain-name>` is your domain name or public IP address and `<tradingview-apikey>` is the generated api key found in `web_server.yml` under `api_allowed_keys_tv`.
 
-### Hummingbot Connection
+### JSON Data for TradingView alerts.
+
+Alerts must be formatted as JSON, the only required parameter is `name`.
+(this parameter key name is configurable in `configs/tradingview.yml`)
+
+<details>
+<summary>Example alert data:</summary>
+
+Simple Start command
+
+```json
+{
+    "name": "hummingbot_instance_1",
+    "command": "start",
+}
+```
+
+Simple Stop command
+
+```json
+{
+    "name": "hummingbot_instance_1",
+    "command": "stop",
+}
+```
+
+Alert with all fields using Pine variables
+
+```json
+{
+    "name": "hummingbot_instance_1",
+    "timestamp": "{{timenow}}",
+    "exchange": "{{exchange}}",
+    "symbol": "{{ticker}}",
+    "interval": "{{interval}}",
+    "price": "{{close}}",
+    "volume": "{{volume}}",
+    "command": "{{strategy.market_position}}",
+    "inventory": "{{strategy.order.comment}}"
+}
+```
+
+</details>
+
+___
+
+## Hummingbot Connection
 
 You can connect hummingbot with websockets to this URL:
 ```html
 ws://localhost:10073/wss
 ```
 
-### Test Connection
+___
+
+## Test Connection
+
+<details>
+<summary>Test Connection ...</summary>
 
 Test the websocket feed in your browser with this js code:
 
@@ -186,5 +281,9 @@ http://localhost:10073/api/hbot/?api_key=<hummingbot-apikey>
 
 Where `<hummingbot-apikey>` is the generated api key found in `web_server.yml` under `api_allowed_keys_hbot`.
 
-## License
+</details>
+
+___
+
+# License
 [MIT](https://choosealicense.com/licenses/mit/)

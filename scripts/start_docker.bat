@@ -19,7 +19,7 @@ if %dockerprune% == 1 (ECHO Pruning docker. && docker system prune -f)
 if %dontbuild% == 1 (ECHO Skipping build.) else (docker image prune -f && docker build -t rogerthat:latest .)
 
 REM Run setup script via docker
-CALL scripts\start_docker_setup_script.bat -s
+CALL scripts\setup_config.bat -s
 
 if %nostart% == 1 ( ECHO Skipping start.) else (docker compose up)
 

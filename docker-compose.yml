@@ -33,4 +33,4 @@ services:
       - "10073:10073"
     depends_on:
       - db
-    command: ["/home/rogerthat/start_docker_compose.sh"]
+    command: ["/home/rogerthat/docker_compose_entrypoint.sh"]

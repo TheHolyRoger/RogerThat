@@ -29,6 +29,7 @@ class tradingview_event(db_model_base,
     command = Column(String(100), index=True)
     exchange = Column(String(90), index=True)
     symbol = Column(String(30), index=True)
+    interval = Column(BigInteger, index=True)
     price = Column(Numeric, index=True)
     volume = Column(Numeric, index=True)
     inventory = Column(Numeric, index=True)
@@ -40,6 +41,7 @@ class tradingview_event(db_model_base,
                  command=None,
                  exchange=None,
                  symbol=None,
+                 interval=None,
                  price=Dec("0"),
                  volume=Dec("0"),
                  inventory=Dec("0"),
@@ -50,6 +52,7 @@ class tradingview_event(db_model_base,
         self.command = command
         self.exchange = exchange
         self.symbol = symbol
+        self.interval = interval
         self.price = price
         self.volume = volume
         self.inventory = inventory
@@ -58,6 +61,7 @@ class tradingview_event(db_model_base,
             self.command = from_json.get("command")
             self.exchange = from_json.get("exchange")
             self.symbol = from_json.get("symbol")
+            self.interval = from_json.get("interval")
             self.price = Dec(str(from_json.get("price", Dec("0"))))
             self.volume = Dec(str(from_json.get("volume", Dec("0"))))
             self.inventory = Dec(str(from_json.get("inventory", Dec("0"))))
@@ -83,6 +87,7 @@ class tradingview_event(db_model_base,
             "command": self.command,
             "exchange": self.exchange,
             "symbol": self.symbol,
+            "interval": self.interval,
             "price": self.price,
             "volume": self.volume,
             "inventory": self.inventory,

@@ -2,6 +2,6 @@ alembic/* eol=lf
 bin/* eol=lf
 rogerthat/* eol=lf
 scripts/* eol=lf
-scripts/start_docker_setup_script.bat eol=crlf
+scripts/*.bat eol=crlf
 support/* eol=lf
 tests/* eol=lf

@@ -47,7 +47,7 @@ else
 fi
 
 # Run setup script via docker
-scripts/start_docker_setup_script.sh -s
+scripts/setup_config.sh -s
 
 if [ "${nostart} " == "1 " ]; then
     echo "Skipping start."
