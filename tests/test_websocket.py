@@ -7,7 +7,11 @@ from rogerthat.config.config import Config
 
 async def test_websocket():
     ws_url = f"ws://localhost:{Config.quart_server_port}/{Config.wss_root}"
-    ws_client = await websockets.connect(ws_url)
+    headers = {
+        "HBOT-API-KEY": Config.api_allowed_keys_hbot[0],
+        "User-Agent": "hummingbot",
+    }
+    ws_client = await websockets.connect(ws_url, extra_headers=headers)
     print("\nConnected to websocket\n\n")
     try:
         while True:
