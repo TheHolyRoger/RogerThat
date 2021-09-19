@@ -5,8 +5,6 @@ RogerThat is a standalone webserver designed for use with tradingview webhooks a
 ## Docker
 ### Installation
 
-[Install Miniconda](https://docs.conda.io/en/latest/miniconda.html) (or Anaconda)
-
 [Install Docker](https://docs.docker.com/get-docker/)
 
 Download and extract this [whole repository](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
@@ -38,7 +36,7 @@ docker compose up
 
 Place both your certificate and key in `./certs` folder named `server.crt` and `server.key` ([LetsEncrypt](https://letsencrypt.org/getting-started/) is recommended).
 
-Or run the following command to generate a self-signed key pair:
+Or run the following command to generate a self-signed key pair (requires openssl):
 
 ```bash
 scripts/generate_self_signed_cert.sh
@@ -61,8 +59,18 @@ Services you can use for Dynamic DNS with a non-static public IP address are:
 * [Duck DNS](https://duckdns.org/)
 * [Dynu](http://www.dynu.com/)
 
+### Configuration
+
+You can use the config setup script via docker by running the following command:
+
+```bash
+scripts/start_docker_setup_script.sh --help
+```
+
 ## Source
 ### Installation
+
+[Install Miniconda](https://docs.conda.io/en/latest/miniconda.html) (or Anaconda)
 
 Clone this repository.
 

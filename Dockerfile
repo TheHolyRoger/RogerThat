@@ -41,6 +41,7 @@ COPY --chown=rogerthat:rogerthat rogerthat/ rogerthat/
 COPY --chown=rogerthat:rogerthat scripts/ scripts/
 COPY --chown=rogerthat:rogerthat alembic.ini .
 COPY --chown=rogerthat:rogerthat support/start_docker_compose.sh .
+COPY --chown=rogerthat:rogerthat support/start_docker_setup_script.sh .
 COPY --chown=rogerthat:rogerthat support/wait-for-it.sh .
 COPY --chown=rogerthat:rogerthat LICENSE .
 COPY --chown=rogerthat:rogerthat README.md .
