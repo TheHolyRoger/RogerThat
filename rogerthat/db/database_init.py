@@ -9,6 +9,7 @@ from rogerthat.db.models import (
     base_model,
 )
 from rogerthat.db.engine import db
+from rogerthat.db.fetch_alembic_revision import fetch_alembic_revision
 
 
 class database_init():
@@ -19,17 +20,6 @@ class database_init():
     #
     # Database Management Stuff
     #
-
-    @classmethod
-    async def alembic_current_rev(cls, input_cfg):
-        captured_text = []
-
-        def print_stdout(text, *arg):
-            nonlocal captured_text
-            captured_text.append(text)
-        input_cfg.print_stdout = print_stdout
-        alembic_cmd.current(input_cfg)
-        return captured_text
 
     @classmethod
     async def create_db(cls):
@@ -43,6 +33,7 @@ class database_init():
         await db.log("Creating new or missing db tables.")
         async with db.engine.begin() as conn:
             await conn.run_sync(cls._meta.create_all)
+        await db.log("Done creating tables.")
         return True
 
     @classmethod
@@ -54,12 +45,13 @@ class database_init():
             await cls.create_db()
             await cls.create_tables()
 
+        await db.log("Checking alembic.")
         try:
-            current_revision = await cls.alembic_current_rev(cls._alembic_cfg)
+            current_revision = fetch_alembic_revision()
         except Exception as e:
             await db.log(f"Alembic exception: {e}")
-            current_revision = []
-        if len(current_revision) == 0:
+            current_revision = None
+        if not current_revision:
             await db.log("First time init, stamping revision.")
             alembic_cmd.stamp(cls._alembic_cfg, "head")
         else:

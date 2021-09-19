@@ -36,12 +36,13 @@ done
 
 if [ "${dockerprune} " == "1 " ]; then
     echo "Pruning docker."
-    docker system prune
+    docker system prune -f
 fi
 
 if [ "${dontbuild} " == "1 " ]; then
     echo "Skipping build."
 else
+    docker image prune -f
     docker build -t rogerthat:latest .
 fi
 
