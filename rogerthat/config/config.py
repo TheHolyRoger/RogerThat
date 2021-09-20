@@ -24,6 +24,7 @@ class ConfigSetup(no_setters):
     _project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     _app_name = AppConfig['app_name']
     _debug_mode = AppConfig['debug_mode']
+    _rebroadcast_on_ws_connect = AppConfig.get('rebroadcast_on_ws_connect', True)
 
     # Web
     _server_host = WebConfig['server_host']

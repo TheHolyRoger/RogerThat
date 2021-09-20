@@ -1,2 +1,3 @@
 app_name: rogerthat
 debug_mode: false
+rebroadcast_on_ws_connect: true

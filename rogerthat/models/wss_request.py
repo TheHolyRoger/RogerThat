@@ -48,7 +48,7 @@ class wss_request:
         await logger.log("New websocket client connected.")
         producer = asyncio.create_task(self.sending())
         consumer = asyncio.create_task(self.receiving())
-        if tradingview_event:
+        if tradingview_event and Config.rebroadcast_on_ws_connect:
             await self._ws_queue.put(tradingview_event.to_json)
         return await asyncio.gather(producer, consumer)
 
