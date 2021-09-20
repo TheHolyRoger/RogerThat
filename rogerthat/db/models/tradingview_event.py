@@ -57,11 +57,13 @@ class tradingview_event(db_model_base,
         self.volume = volume
         self.inventory = inventory
         if from_json:
-            self.timestamp_event = from_json.get("timestamp")
+            timestamp_event = from_json.get("timestamp")
+            interval = from_json.get("interval")
+            self.timestamp_event = int(timestamp_event) if timestamp_event else None
             self.command = from_json.get("command")
             self.exchange = from_json.get("exchange")
             self.symbol = from_json.get("symbol")
-            self.interval = from_json.get("interval")
+            self.interval = int(interval) if interval else None
             self.price = Dec(str(from_json.get("price", Dec("0"))))
             self.volume = Dec(str(from_json.get("volume", Dec("0"))))
             self.inventory = Dec(str(from_json.get("inventory", Dec("0"))))
