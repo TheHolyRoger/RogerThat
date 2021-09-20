@@ -1,13 +1,13 @@
 # RogerThat
 
-RogerThat is a standalone webserver designed for use with tradingview webhooks and forwarding them to hummingbot.
+**RogerThat** is a standalone webserver designed to receive **TradingView** webhooks (or similar) and forward them to **Hummingbot** via websockets or REST queries.
 
 # Docker
 ## Installation
 
-[Install Docker](https://docs.docker.com/get-docker/)
+[**Install Docker**](https://docs.docker.com/get-docker/)
 
-Download and extract this [whole repository](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
+Download and extract this [**whole repository**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
 
 ```bash
 wget https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip
@@ -64,15 +64,15 @@ ___
 <details>
 <summary>Expand ...</summary>
 
-Since TradingView requires a publicly accessible URL for webhook alerts, you'll need to use your own domain name, or your public IP address.
+Since **TradingView** requires a publicly accessible URL for webhook alerts, you'll need to use your own domain name, or your public IP address.
 
-You'll also need to open up (and forward) port 80 (or 443 if using HTTPS) in your firewall/router to the machine running RogerThat.
+You'll also need to open up (and forward) port **80** (or **443** if using HTTPS) in your firewall/router to the machine running **RogerThat**.
 
-(Do NOT open up port 10073 externally)
+**(Do NOT open up port 10073 externally)**
 
 ### Dynamic Domain Names
 
-Services you can use for Dynamic DNS with a non-static public IP address are:
+Services you can use for dynamic DNS with a non-static public IP address are:
 
 * [No-IP](https://www.noip.com/)
 * [Afraid](https://afraid.org/)
@@ -119,7 +119,7 @@ scripts/setup_config.bat --help
 
 ### Change Hostname
 
-Change the hostname to listen on for the public TradingView webhook with the following command:
+Change the hostname to listen on for the public **TradingView** webhook with the following command:
 
 <details>
 <summary>Linux/Mac</summary>
@@ -190,7 +190,7 @@ ___
 
 ## TradingView Webhooks
 
-Set up your TradingView alert URL like this:
+Set up your **TradingView** alert URL like this:
 
 ```html
 http://<public-ip-or-domain-name>/api/tv_webhook/?api_key=<tradingview-apikey>
@@ -201,7 +201,11 @@ Where `<public-ip-or-domain-name>` is your domain name or public IP address and 
 ### JSON Data for TradingView alerts.
 
 Alerts must be formatted as JSON, the only required parameter is `name`.
-(this parameter key name is configurable in `configs/tradingview.yml`)
+*(this parameter key name is configurable in `configs/tradingview.yml`)*
+
+The `name` key or one of the `tradingview_descriptor_fields` must be present in the JSON data to be accepted, but the value can be null or empty.
+
+Using an empty value for `name` ignores **Hummingbot**'s *Remote Command Executor* routing names.
 
 <details>
 <summary>Example alert data:</summary>
@@ -246,10 +250,31 @@ ___
 
 ## Hummingbot Connection
 
-You can connect hummingbot with websockets to this URL:
+You can connect the **Hummingbot** _Remote Command Executor_ to the **RogerThat** websocket with this URL:
 ```html
 ws://localhost:10073/wss
 ```
+
+### Example Config
+
+<details>
+<summary>Example Config ...</summary>
+
+Use something like the following config to connect **RogerThat** to **Hummingbot** via the **Remote Command Executor**.
+
+```yaml
+# Remote commands
+remote_commands_enabled: true
+remote_commands_api_key: a9ba4b61-6f6d-41cf-85c3-7cfdfcbea0f3
+remote_commands_ws_url: ws://localhost:10073/wss
+remote_commands_routing_name: hummingbot_instance_1
+remote_commands_ignore_first_event: true
+remote_commands_translate_commands:
+  long: start
+  short: stop
+```
+
+</details>
 
 ___
 
