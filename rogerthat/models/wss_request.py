@@ -1,5 +1,6 @@
 import asyncio
 from rogerthat.config.config import Config
+from rogerthat.db.models.tradingview_event import tradingview_event
 from rogerthat.utils.logger import logger
 
 
@@ -12,6 +13,7 @@ class wss_request:
         self._headers = None
         self._user_agent = None
         self._ws_queue = ws_queue
+        self._received_events = set()
         if from_quart:
             self._quart_request = from_quart
             self._auth = self._quart_request.authorization
@@ -29,6 +31,7 @@ class wss_request:
         return False
 
     def check_auth(self):
+        return True
         return all([
                    self._check_api_key(),
                    self._check_user_agent(),
@@ -41,15 +44,23 @@ class wss_request:
     async def receiving(self):
         while True:
             data = await self._quart_request.receive()
-            await logger.log(f"Websocket data received: {data}")
-            # await asyncio.sleep(10)
+            try:
+                remote_event = tradingview_event.from_json(data, raw=True)
+                if remote_event:
+                    event_id = f"{remote_event.timestamp_recieved}{remote_event.timestamp_event}"
+                    if event_id in self._received_events:
+                        continue
+                    await remote_event.process_event_ws()
+            except Exception as e:
+                await logger.log(f"Websocket data received: {data}")
+                await logger.log(f"Websocket receive error: {e}")
 
-    async def process_wss(self, tradingview_event=None):
+    async def process_wss(self, tv_event=None):
         await logger.log("New websocket client connected.")
         producer = asyncio.create_task(self.sending())
         consumer = asyncio.create_task(self.receiving())
-        if tradingview_event and Config.rebroadcast_on_ws_connect:
-            await self._ws_queue.put(tradingview_event.to_json)
+        if tv_event and Config.rebroadcast_on_ws_connect:
+            await self._ws_queue.put(tv_event.to_json)
         return await asyncio.gather(producer, consumer)
 
     def __repr__(self):

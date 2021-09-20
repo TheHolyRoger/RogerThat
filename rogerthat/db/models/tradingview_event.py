@@ -59,24 +59,34 @@ class tradingview_event(db_model_base,
         if from_json:
             timestamp_event = from_json.get("timestamp")
             interval = from_json.get("interval")
+            price = from_json.get("price")
+            volume = from_json.get("volume")
+            inventory = from_json.get("inventory")
             self.timestamp_event = int(timestamp_event) if timestamp_event else None
             self.command = from_json.get("command")
             self.exchange = from_json.get("exchange")
             self.symbol = from_json.get("symbol")
             self.interval = int(interval) if interval else None
-            self.price = Dec(str(from_json.get("price", Dec("0"))))
-            self.volume = Dec(str(from_json.get("volume", Dec("0"))))
-            self.inventory = Dec(str(from_json.get("inventory", Dec("0"))))
+            self.price = Dec(str(price)) if price else Dec("0")
+            self.volume = Dec(str(price)) if volume else Dec("0")
+            self.inventory = Dec(str(price)) if inventory else Dec("0")
+            self.event_descriptor = from_json.get("event_descriptor")
             self._get_data_fields(from_json)
 
     def _get_data_fields(self, from_json):
-        for field in Config.tradingview_descriptor_fields:
-            if field in from_json:
-                self.event_descriptor = from_json.get(field)
-                break
+        if not self.event_descriptor:
+            for field in Config.tradingview_descriptor_fields:
+                if field in from_json:
+                    self.event_descriptor = from_json.get(field)
+                    break
 
     async def process_event(self):
         await logger.log(f"Received event from TradingView: {self.to_dict}")
+        await self.db_save()
+        await ws_queue.broadcast(self.to_json)
+
+    async def process_event_ws(self):
+        await logger.log(f"Received event via websocket: {self.to_dict}")
         await self.db_save()
         await ws_queue.broadcast(self.to_json)
 
@@ -98,6 +108,16 @@ class tradingview_event(db_model_base,
     @property
     def to_json(self):
         return ujson.dumps(self.to_dict)
+
+    @classmethod
+    def from_json(cls,
+                  data,
+                  raw=False):
+        json_data = ujson.loads(data) if raw else data
+        new_event = cls(from_json=json_data)
+        if new_event.event_descriptor:
+            return new_event
+        return None
 
     @classmethod
     async def fetch_latest(cls,):
