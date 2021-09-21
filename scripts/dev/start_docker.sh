@@ -34,6 +34,9 @@ do
     esac
 done
 
+export PUID=$(id -u)
+export PGID=$(id -g)
+
 if [ "${dockerprune} " == "1 " ]; then
     echo "Pruning docker."
     docker system prune -f

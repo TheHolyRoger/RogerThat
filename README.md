@@ -77,7 +77,7 @@ Run without re-building:
 <summary>Windows</summary>
 
 ```bat
-./scripts/start_docker.bat -d
+scripts\start_docker.bat -d
 ```
 </details>
 
@@ -116,7 +116,7 @@ scripts/generate_self_signed_cert.sh
 
 Windows
 ```bat
-scripts/generate_self_signed_cert.bat
+scripts\generate_self_signed_cert.bat
 ```
 </details>
 
@@ -137,7 +137,7 @@ scripts/setup_config.sh --help
 <summary>Windows</summary>
 
 ```bat
-scripts/setup_config.bat --help
+scripts\setup_config.bat --help
 ```
 </details>
 
@@ -157,8 +157,8 @@ scripts/setup_config.sh --hostname 1.2.3.4
 <summary>Windows</summary>
 
 ```bat
-scripts/setup_config.bat --hostname yourhostname.com
-scripts/setup_config.bat --hostname 1.2.3.4
+scripts\setup_config.bat --hostname yourhostname.com
+scripts\setup_config.bat --hostname 1.2.3.4
 ```
 </details>
 
@@ -186,9 +186,20 @@ cd RogerThat
 
 Set up and activate the environment with the following command.
 
+<details>
+<summary>Linux/Mac</summary>
+
 ```bash
 ./scripts/update_environment.sh
 ```
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+scripts\update_environment.bat
+```
+</details>
 
 Run the following command to generate the default configs:
 ```bash

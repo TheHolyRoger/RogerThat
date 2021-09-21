@@ -7,6 +7,7 @@ services:
       - ./data/db:/var/lib/postgresql/data
     env_file:
       - ./configs/env_postgres.env
+    user: "${PUID:-1000}:${PGID:-1000}"
   nginx:
     image: nginx:latest
     entrypoint: /nginx-entrypoint.sh
