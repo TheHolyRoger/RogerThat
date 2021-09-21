@@ -1,5 +1,5 @@
 # Logging
-from logging.config import fileConfig
+# from logging.config import fileConfig
 # SqlAlchemy
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -26,7 +26,7 @@ alembic_config.set_main_option('sqlalchemy.url', DB_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(alembic_config.config_file_name)
+# fileConfig(alembic_config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support

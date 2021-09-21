@@ -26,6 +26,8 @@ services:
   rogerthat:
     build: .
     image: theholiestroger/rogerthat:latest
+    environment:
+      PYTHONUNBUFFERED: 1
     volumes:
       - ./configs:/configs
       - ./logs:/logs

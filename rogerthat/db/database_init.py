@@ -38,6 +38,7 @@ class database_init():
 
     @classmethod
     async def initialise(cls):
+        await db.log("Database init.")
         try:
             await cls.create_tables()
         except Exception:
