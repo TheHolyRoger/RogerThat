@@ -9,6 +9,9 @@
 
 Download and extract this [**whole repository**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
 
+<details>
+<summary>Linux/Mac</summary>
+
 ```bash
 wget https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip
 unzip master.zip
@@ -19,7 +22,24 @@ Change directory:
 cd RogerThat
 ```
 
-Then run the following commands to build and run the docker image:
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+bitsadmin /transfer dlrogerthat /download /priority normal https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip %UserProfile%\RogerThat.zip
+```
+
+Extract the zip file manually.
+
+Change directory:
+```bash
+cd RogerThat
+```
+
+</details>
+
+Then run the following commands to launch the docker image:
 
 <details>
 <summary>Linux/Mac</summary>
@@ -31,7 +51,11 @@ Then run the following commands to build and run the docker image:
 <details>
 <summary>Windows</summary>
 
-```bash
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **If using windows, make sure to run the .bat scripts using windows CMD, not "Git Bash".**
+
+Use git bash only for `git` commands, do not run these scripts from git bash as they will not work.
+
+```bat
 ./scripts/start_docker.bat
 ```
 </details>
@@ -52,7 +76,7 @@ Run without re-building:
 <details>
 <summary>Windows</summary>
 
-```bash
+```bat
 ./scripts/start_docker.bat -d
 ```
 </details>
@@ -91,7 +115,7 @@ scripts/generate_self_signed_cert.sh
 ```
 
 Windows
-```bash
+```bat
 scripts/generate_self_signed_cert.bat
 ```
 </details>
@@ -112,7 +136,7 @@ scripts/setup_config.sh --help
 <details>
 <summary>Windows</summary>
 
-```bash
+```bat
 scripts/setup_config.bat --help
 ```
 </details>
@@ -132,7 +156,7 @@ scripts/setup_config.sh --hostname 1.2.3.4
 <details>
 <summary>Windows</summary>
 
-```bash
+```bat
 scripts/setup_config.bat --hostname yourhostname.com
 scripts/setup_config.bat --hostname 1.2.3.4
 ```
@@ -143,7 +167,7 @@ ___
 # Source
 
 <details>
-<summary>Source Installation Steps ...</summary>
+<summary>Steps to install from source instead of docker ...</summary>
 
 ## Installation
 
