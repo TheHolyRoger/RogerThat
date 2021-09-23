@@ -22,20 +22,17 @@ Change directory:
 cd RogerThat
 ```
 
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **You must always run scripts from the main project directory, do not switch to the `scripts` directory**
+
 </details>
 <details>
 <summary>Windows</summary>
 
-```bat
-bitsadmin /transfer dlrogerthat /download /priority normal https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip %UserProfile%\RogerThat.zip
-```
+Manually download and extract the [**repository zip file**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
 
-Extract the zip file manually.
+Open up Windows CMD and **switch directory to the extracted zip folder**.
 
-Change directory:
-```bash
-cd RogerThat
-```
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **You must always run scripts from the main project directory, do not switch to the `scripts` directory**
 
 </details>
 
@@ -56,7 +53,7 @@ Then run the following commands to launch the docker image:
 Use git bash only for `git` commands, do not run these scripts from git bash as they will not work.
 
 ```bat
-./scripts/start_docker.bat
+scripts\start_docker.bat
 ```
 </details>
 
@@ -83,45 +80,6 @@ scripts\start_docker.bat -d
 
 ___
 
-## Public access
-
-<details>
-<summary>Expand ...</summary>
-
-Since **TradingView** requires a publicly accessible URL for webhook alerts, you'll need to use your own domain name, or your public IP address.
-
-You'll also need to open up (and forward) port **80** (or **443** if using HTTPS) in your firewall/router to the machine running **RogerThat**.
-
-**(Do NOT open up port 10073 externally)**
-
-### Dynamic Domain Names
-
-Services you can use for dynamic DNS with a non-static public IP address are:
-
-* [No-IP](https://www.noip.com/)
-* [Afraid](https://afraid.org/)
-* [Duck DNS](https://duckdns.org/)
-* [Dynu](http://www.dynu.com/)
-
-### Enabling HTTPS
-
-Place both your certificate and key in `./certs` folder named `server.crt` and `server.key` ([LetsEncrypt](https://letsencrypt.org/getting-started/) is recommended).
-
-Or run the following command to generate a self-signed key pair:
-
-Linux/Mac
-```bash
-scripts/generate_self_signed_cert.sh
-```
-
-Windows
-```bat
-scripts\generate_self_signed_cert.bat
-```
-</details>
-
-___
-
 ## Configuration
 
 You can use the config setup script via docker by running the following commands:
@@ -132,6 +90,9 @@ You can use the config setup script via docker by running the following commands
 ```bash
 scripts/setup_config.sh --help
 ```
+
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **Do not run the setup script via python, always run it via `scripts/setup_config.sh`.**
+
 </details>
 <details>
 <summary>Windows</summary>
@@ -139,11 +100,87 @@ scripts/setup_config.sh --help
 ```bat
 scripts\setup_config.bat --help
 ```
+
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **Do not run the setup script via python, always run it via `scripts\setup_config.bat`.**
+
 </details>
 
-### Change Hostname
+___
+
+### Public access
+
+<details>
+<summary>Expand ...</summary>
+
+Since **TradingView** requires a publicly accessible URL for webhook alerts, you'll need to use your own domain name, or your public IP address.
+
+You'll also need to open up (and forward) port **80** (or **443** if using HTTPS) in your firewall/router to the machine running **RogerThat**.
+
+**(Do NOT open up port 10073 externally)**
+
+#### Cloudflare (Recommended)
+
+<details>
+<summary>Expand ...</summary>
+
+It is recommended to use [Cloudflare](https://www.cloudflare.com/) to proxy and mask your IP address for public operation.
+
+You can use services like [DNS-o-matic](https://dnsomatic.com/) with your home dynamic IP to keep it updated and proxied with [Cloudflare](https://www.cloudflare.com/).
+
+[More information in the help article here](https://support.cloudflare.com/hc/en-us/articles/360020524512-Manage-dynamic-IPs-in-Cloudflare-DNS-programmatically#h_161458650101544484552881)
+
+</details>
+
+#### Dynamic Domain Names (Optional)
+
+<details>
+<summary>Expand ...</summary>
+
+Services you can use for dynamic DNS with a non-static public IP address are:
+
+* [DNS-O-matic](https://dnsomatic.com/) (Recommended, with Cloudflare)
+* [No-IP](https://www.noip.com/)
+* [Afraid](https://afraid.org/)
+* [Duck DNS](https://duckdns.org/)
+* [Dynu](http://www.dynu.com/)
+
+</details>
+
+#### Enabling HTTPS (Optional)
+
+<details>
+<summary>Expand ...</summary>
+
+Place both your certificate and key in `./certs` folder named `server.crt` and `server.key` ([LetsEncrypt](https://letsencrypt.org/getting-started/) is recommended).
+
+Or run the following command to generate a self-signed key pair:
+
+<details>
+<summary>Linux/Mac</summary>
+
+```bash
+scripts/generate_self_signed_cert.sh
+```
+
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+scripts\generate_self_signed_cert.bat
+```
+</details>
+
+</details>
+
+#### Change Hostname (Optional)
+
+<details>
+<summary>Expand ...</summary>
 
 Change the hostname to listen on for the public **TradingView** webhook with the following command:
+
+(Do not use a full URL here, the hostname is the part of the URL after https:// and before any other slashes)
 
 <details>
 <summary>Linux/Mac</summary>
@@ -160,6 +197,10 @@ scripts/setup_config.sh --hostname 1.2.3.4
 scripts\setup_config.bat --hostname yourhostname.com
 scripts\setup_config.bat --hostname 1.2.3.4
 ```
+</details>
+
+</details>
+
 </details>
 
 ___

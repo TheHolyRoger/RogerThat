@@ -42,12 +42,16 @@ if __name__ == "__main__":
     if args.setup_configs_if_blank:
         copy_fresh_templates(True)
     if args.generate_api_key_tv:
+        copy_fresh_templates()
         save_new_api_key_tv()
     if args.generate_api_key_hbot:
+        copy_fresh_templates()
         save_new_api_key_hbot()
     if args.generate_quart_secrets:
+        copy_fresh_templates()
         generate_quart_secrets()
     if args.hostname:
+        copy_fresh_templates()
         save_new_hostname(args.hostname)
     if args.update_configs:
         update_configs()

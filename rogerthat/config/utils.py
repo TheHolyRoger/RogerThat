@@ -75,7 +75,13 @@ def update_conf_from_template(conf_file):
     save_config(sample_config, conf_file)
 
 
-def save_new_hostname(new_hostname):
+def save_new_hostname(new_hostname_raw):
+    new_hostname = new_hostname_raw
+    split_host = new_hostname_raw.split("://")
+    if len(split_host) > 1:
+        new_hostname = split_host[1]
+    new_hostname = new_hostname.split(":")[0]
+    new_hostname = new_hostname.split("/")[0]
     config = load_config("web_server")
     config["server_host"] = new_hostname
     save_config(config, "web_server")
