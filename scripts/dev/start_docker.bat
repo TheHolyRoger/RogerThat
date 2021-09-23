@@ -1,5 +1,10 @@
 @echo off
 
+for %%I in ("%~dp0.") do for %%J in ("%%~dpI.") do set ParentFolderName=%%~dpnxJ
+for %%a in ("%ParentFolderName%") do set "ParentFolderName=%%~dpa"
+cd  %ParentFolderName%
+
+
 @SET SCRIPT=%~nx0
 @SET FNAME=%~f0
 @SET nostart=0

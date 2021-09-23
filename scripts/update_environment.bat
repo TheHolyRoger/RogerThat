@@ -1,4 +1,8 @@
 @ECHO OFF
+
+for %%I in ("%~dp0.") do for %%J in ("%%~dpI.") do set ParentFolderName=%%~dpnxJ
+cd  %ParentFolderName%
+
 @SET ENV_FILE=support\environment.yml
 IF EXIST "C:\ProgramData\Miniconda3\Scripts\activate.bat" goto activate_miniconda
 IF EXIST "C:\ProgramData\Anaconda3\Scripts\activate.bat" goto activate_anaconda

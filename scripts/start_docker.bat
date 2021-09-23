@@ -1,5 +1,9 @@
 @echo off
 
+for %%I in ("%~dp0.") do for %%J in ("%%~dpI.") do set ParentFolderName=%%~dpnxJ
+cd  %ParentFolderName%
+
+
 @SET SCRIPT=%~nx0
 @SET FNAME=%~f0
 @SET dockerprune=0
