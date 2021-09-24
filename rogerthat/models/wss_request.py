@@ -31,7 +31,8 @@ class wss_request:
         return False
 
     def check_auth(self):
-        return True
+        if Config.disable_websocket_authentication:
+            return True
         return all([
                    self._check_api_key(),
                    self._check_user_agent(),

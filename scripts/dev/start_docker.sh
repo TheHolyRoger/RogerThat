@@ -49,6 +49,8 @@ else
     docker compose build
 fi
 
+echo "Calling setup script"
+
 # Run setup script via docker
 scripts/setup_config.sh -s
 

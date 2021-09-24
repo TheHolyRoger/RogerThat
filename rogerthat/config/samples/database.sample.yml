@@ -1,5 +1,19 @@
+#########################################
+###     Postgres Database config      ###
+#########################################
+template_version: 1
+
+# Postgres Database Host
 database_host: db
+
+# Postgres Database Name
 database_name: rogerthat
+
+# Postgres Database ROOT User
 database_user_root: postgres
+
+# Postgres Database User
 database_user: postgres
+
+# Postgres Database Password
 database_password: postgres

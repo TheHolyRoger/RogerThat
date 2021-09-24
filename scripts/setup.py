@@ -1,15 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import path_util  # noqa: F401
-from rogerthat.config.utils import (
-    save_new_api_key_tv,
-    save_new_api_key_hbot,
-    save_new_hostname,
-    generate_quart_secrets,
-    copy_fresh_templates,
-    delete_existing_configs,
-    update_configs,
-)
+from rogerthat.config.utils import config_utils
 
 
 def parse_args():
@@ -36,22 +28,25 @@ def parse_args():
 if __name__ == "__main__":
     args = parse_args()
     if args.delete_configs:
-        delete_existing_configs()
+        config_utils.delete_existing_configs()
     if args.setup_configs:
-        copy_fresh_templates()
+        config_utils.copy_fresh_templates()
     if args.setup_configs_if_blank:
-        copy_fresh_templates(True)
+        config_utils.copy_fresh_templates(True)
     if args.generate_api_key_tv:
-        copy_fresh_templates()
-        save_new_api_key_tv()
+        config_utils.copy_fresh_templates()
+        config_utils.save_new_api_key_tv()
     if args.generate_api_key_hbot:
-        copy_fresh_templates()
-        save_new_api_key_hbot()
+        config_utils.copy_fresh_templates()
+        config_utils.save_new_api_key_hbot()
     if args.generate_quart_secrets:
-        copy_fresh_templates()
-        generate_quart_secrets()
+        config_utils.copy_fresh_templates()
+        config_utils.generate_quart_secrets()
     if args.hostname:
-        copy_fresh_templates()
-        save_new_hostname(args.hostname)
+        config_utils.copy_fresh_templates()
+        config_utils.save_new_hostname(args.hostname)
     if args.update_configs:
-        update_configs()
+        config_utils.copy_fresh_templates()
+        config_utils.update_configs()
+    if not args.delete_configs:
+        config_utils.check_configs()

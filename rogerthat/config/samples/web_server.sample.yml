@@ -1,18 +1,36 @@
+#########################################
+###         Web Server config         ###
+#########################################
+template_version: 1
+
+# Server HOSTNAME to listen on publicly
+# (Just the HOSTNAME, not the full URL)
 server_host: localhost
+
+# Webroot for REST URLs
+web_root: api
+# Webroot for Websocket URLs
+wss_root: wss
+
+# Allowed API keys for the Hummingbot REST route and Websocket route
+api_allowed_keys_hbot:
+- apikey1
+
+# Allowed API keys for the TradingView route
+api_allowed_keys_tv:
+- apikey1
+
+# Whether to disable authentication on the Websocket route.
+# (Only recommended for testing.)
+disable_websocket_authentication: false
+
+# Accepted user agents on the TradingView router
+accepted_user_agents_tv:
+- go-http-client/1.1
+
+# Quart server settings, no need to change these usually
+quart_server_port: 10073
 quart_secret_key: XXXXXXXXXXXXXXXXX
 quart_cookie_domain_debug: localhost
 quart_auth_pep: XXXXXXXXXXXXXXXXX
 quart_auth_csalt: some salt here
-quart_server_port: 10073
-
-web_root: api
-wss_root: wss
-
-accepted_user_agents_tv:
-- go-http-client/1.1
-
-api_allowed_keys_hbot:
-- apikey1
-
-api_allowed_keys_tv:
-- apikey1
