@@ -95,6 +95,7 @@ class web_request:
             await self.build_request_args()
         if for_tv_api and not self.check_valid_api_key_tv():
             await logger.log("Invalid api key detected.")
+            await self.log_request_full()
             return False
         if for_hbot_api and not self.check_valid_api_key_hbot():
             await logger.log("Invalid api key detected.")
