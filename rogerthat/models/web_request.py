@@ -63,7 +63,8 @@ class web_request:
         return self._user_agent and self._user_agent in Config.accepted_user_agents_tv
 
     def check_valid_content_type(self):
-        return self._content_type and self._content_type.startswith('application/json')
+        return self._content_type and (self._content_type.startswith('application/json') or
+                                       self._content_type.startswith('text/plain'))
 
     def check_valid_api_key_tv(self):
         return (self._request_args_keys and
@@ -121,18 +122,18 @@ class web_request:
         log_lines.append(f"Query string: {self._query_string}")
         log_lines.append(f"Query Params: {self._args}")
         log_lines.append(f"Full Params: {self._request_args_data}")
-        # try:
-        #     log_lines.append(f"Data: {await self._quart_request.data}")
-        # except Exception:
-        #     pass
-        # try:
-        #     log_lines.append(f"Full Data: {await self._quart_request.get_data()}")
-        # except Exception:
-        #     pass
-        # try:
-        #     log_lines.append(f"JSON: {await self._quart_request.json}")
-        # except Exception:
-        #     pass
+        try:
+            log_lines.append(f"Data: {await self._quart_request.data}")
+        except Exception as e:
+            await logger.log(f"Data Exc: {e}")
+        try:
+            log_lines.append(f"Full Data: {await self._quart_request.get_data()}")
+        except Exception as e:
+            await logger.log(f"Full Data Exc: {e}")
+        try:
+            log_lines.append(f"JSON: {await self._quart_request.json}")
+        except Exception as e:
+            await logger.log(f"JSON Exc: {e}")
         log_lines.append(f"Content Type: {self._content_type}")
         log_lines.append(f"Cookies: {self._cookies}")
         log_lines.append(f"Full Headers {'>' * 10}")
