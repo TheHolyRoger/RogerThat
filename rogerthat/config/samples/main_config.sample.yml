@@ -1,7 +1,7 @@
 #########################################
 ###          Main App config          ###
 #########################################
-template_version: 1
+template_version: 0.1
 
 # Main server app name
 app_name: rogerthat

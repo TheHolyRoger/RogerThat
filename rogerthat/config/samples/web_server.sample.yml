@@ -1,7 +1,7 @@
 #########################################
 ###         Web Server config         ###
 #########################################
-template_version: 1
+template_version: 0.1
 
 # Server HOSTNAME to listen on publicly
 # (Just the HOSTNAME, not the full URL)

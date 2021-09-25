@@ -1,7 +1,7 @@
 #########################################
 ###     Postgres Database config      ###
 #########################################
-template_version: 1
+template_version: 0.1
 
 # Postgres Database Host
 database_host: db

@@ -338,6 +338,8 @@ ws://localhost:10073/wss
 
 Use something like the following config to connect **RogerThat** to **Hummingbot** via the **Remote Command Executor**.
 
+This config is found inside your main hummingbot folder then `conf\conf_global.yml`
+
 ```yaml
 # Remote commands
 remote_commands_enabled: true
@@ -359,6 +361,26 @@ ___
 <details>
 <summary>Test Connection ...</summary>
 
+You can enable and disable websockets authentication in the config with these commands.
+(You must disable websockets authentication for the in-browser test to work.)
+
+<details>
+<summary>Linux/Mac</summary>
+
+```bash
+scripts/setup_config.sh --enable-websocket-auth
+scripts/setup_config.sh --disable-websocket-auth
+```
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+scripts\setup_config.bat --enable-websocket-auth
+scripts\setup_config.bat --disable-websocket-auth
+```
+</details>
+
 Test the websocket feed in your browser with this js code:
 
 ```javascript
@@ -368,7 +390,7 @@ ws.onmessage = function (event) {
 };
 ```
 
-Or run the python test listener:
+Or run the python test listener (requires source installation steps but can authenticate):
 
 ```bash
 python tests/test_websocket.py

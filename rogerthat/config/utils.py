@@ -6,6 +6,9 @@ import uuid
 from rogerthat.utils.yaml import (
     load_yml_from_file,
     save_yml_to_file,
+    yml_clear_list,
+    yml_fix_list_comments,
+    yml_add_to_list,
 )
 
 
@@ -57,29 +60,21 @@ class config_utils:
         cls.save_config(config, cls._conf_file_web)
 
     @classmethod
-    def delete_sample_api_key_hbot(cls):
-        config = cls.load_config(cls._conf_file_web)
-        config["api_allowed_keys_hbot"].pop(0)
-        cls.save_config(config, cls._conf_file_web)
-
-    @classmethod
-    def delete_sample_api_key_tv(cls):
-        config = cls.load_config(cls._conf_file_web)
-        config["api_allowed_keys_tv"].pop(0)
-        cls.save_config(config, cls._conf_file_web)
-
-    @classmethod
-    def save_new_api_key_tv(cls):
+    def save_new_api_key_tv(cls, clear=False):
         config = cls.load_config(cls._conf_file_web)
         newkey = cls.generate_api_key(config["api_allowed_keys_tv"])
-        config["api_allowed_keys_tv"].append(newkey)
+        if clear:
+            config["api_allowed_keys_tv"] = yml_clear_list(config["api_allowed_keys_tv"])
+        config["api_allowed_keys_tv"] = yml_add_to_list(config["api_allowed_keys_tv"], newkey)
         cls.save_config(config, cls._conf_file_web)
 
     @classmethod
-    def save_new_api_key_hbot(cls):
+    def save_new_api_key_hbot(cls, clear=False):
         config = cls.load_config(cls._conf_file_web)
         newkey = cls.generate_api_key(config["api_allowed_keys_hbot"])
-        config["api_allowed_keys_hbot"].append(newkey)
+        if clear:
+            config["api_allowed_keys_hbot"] = yml_clear_list(config["api_allowed_keys_hbot"])
+        config["api_allowed_keys_hbot"] = yml_add_to_list(config["api_allowed_keys_hbot"], newkey)
         cls.save_config(config, cls._conf_file_web)
 
     @classmethod
@@ -92,6 +87,7 @@ class config_utils:
                 if user_value and isinstance(sample_config[k], ruamel.yaml.comments.CommentedSeq):
                     new_list = ruamel.yaml.comments.CommentedSeq(user_value)
                     new_list._yaml_comment = sample_config[k].ca
+                    yml_fix_list_comments(new_list)
                     sample_config[k] = new_list
                 elif user_value:
                     sample_config[k] = user_value
@@ -122,6 +118,12 @@ class config_utils:
         config["server_host"] = new_hostname
         cls.save_config(config, cls._conf_file_web)
         cls.generate_env_nginx()
+
+    @classmethod
+    def toggle_websocket_auth(cls, disable):
+        config = cls.load_config(cls._conf_file_web)
+        config["disable_websocket_authentication"] = bool(disable)
+        cls.save_config(config, cls._conf_file_web)
 
     @classmethod
     def generate_env_postgres(cls, safe=False):
@@ -165,10 +167,8 @@ class config_utils:
                     os.remove(new_conf)
                 shutil.copy(templ_conf, new_conf)
         if not safe or not configs_exist:
-            cls.delete_sample_api_key_hbot()
-            cls.delete_sample_api_key_tv()
-            cls.save_new_api_key_tv()
-            cls.save_new_api_key_hbot()
+            cls.save_new_api_key_tv(clear=True)
+            cls.save_new_api_key_hbot(clear=True)
             cls.generate_quart_secrets()
         cls.generate_env_postgres()
         cls.generate_env_nginx()

@@ -1,7 +1,7 @@
 #########################################
 ###        TradingView config         ###
 #########################################
-template_version: 1
+template_version: 0.1
 
 # A list of key names to use for the event descriptor on received events.
 # Only one will be used.
