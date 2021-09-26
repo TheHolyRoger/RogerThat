@@ -279,7 +279,7 @@ Where `<public-ip-or-domain-name>` is your domain name or public IP address and 
 Alerts must be formatted as JSON, the only required parameter is `name`.
 *(this parameter key name is configurable in `configs/tradingview.yml`)*
 
-The `name` key or one of the `tradingview_descriptor_fields` must be present in the JSON data to be accepted, but the value can be null or empty.
+The `name` key or one of the `tradingview_descriptor_fields` must be present in the JSON data to be accepted, but the value can be null or empty. This is transmitted to **Hummingbot** as `event_descriptor`
 
 Using an empty value for `name` ignores **Hummingbot**'s *Remote Command Executor* routing names.
 
@@ -361,6 +361,21 @@ remote_commands_translate_commands:
   long: start
   short: stop
 ```
+
+</details>
+
+
+### Filtering events
+
+<details>
+<summary>Expand ...</summary>
+
+To filter events received based on the `event_descriptor`, change your websockets URL to:
+```html
+ws://localhost:10073/wss/<event-descriptor>
+```
+
+Where `event-descriptor` matches the `event_descriptor` or *name* value of the events you wish to receive.
 
 </details>
 

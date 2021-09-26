@@ -38,3 +38,9 @@ async def api_route_hummingbot():
 @ws_queue.collect_websocket
 async def api_wss_hbot(queue):
     return await route_handlers.wss_handler_hummingbot(websocket, queue)
+
+
+@routes_main.websocket(f"/{Config.wss_root}/<channel>")
+@ws_queue.collect_websocket
+async def api_wss_hbot_filtered(queue, channel):
+    return await route_handlers.wss_handler_hummingbot(websocket, queue, channel)

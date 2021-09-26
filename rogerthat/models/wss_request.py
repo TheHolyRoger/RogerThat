@@ -57,7 +57,6 @@ class wss_request:
                 await logger.log(f"Websocket receive error: {e}")
 
     async def process_wss(self, tv_event=None):
-        await logger.log("New websocket client connected.")
         producer = asyncio.create_task(self.sending())
         consumer = asyncio.create_task(self.receiving())
         if tv_event and Config.rebroadcast_on_ws_connect:

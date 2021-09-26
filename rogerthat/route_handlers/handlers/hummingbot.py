@@ -5,6 +5,7 @@ from quart import (
 from rogerthat.models.web_request import web_request
 from rogerthat.models.wss_request import wss_request
 from rogerthat.db.models.tradingview_event import tradingview_event
+from rogerthat.utils.logger import logger
 
 
 class route_handlers_hummingbot:
@@ -27,10 +28,14 @@ class wss_handlers_hummingbot:
     def __init__(self):
         pass
 
-    async def wss_handler_hummingbot(self, ws_request, ws_queue):
+    async def wss_handler_hummingbot(self, ws_request, ws_queue, ws_channel=None):
         request = wss_request(from_quart=ws_request, ws_queue=ws_queue)
         valid_request = request.check_auth()
         if valid_request:
-            latest_event = await tradingview_event.fetch_latest()
+            if ws_channel:
+                await logger.log(f"New websocket client connected on channel: {ws_channel}")
+            else:
+                await logger.log("New websocket client connected.")
+            latest_event = await tradingview_event.fetch_latest(event_descriptor=ws_channel)
             await request.process_wss(latest_event)
         return abort(401)

@@ -83,12 +83,12 @@ class tradingview_event(db_model_base,
     async def process_event(self):
         await logger.log(f"Received event from TradingView: {self.to_dict}")
         await self.db_save()
-        await ws_queue.broadcast(self.to_json)
+        await ws_queue.broadcast(self)
 
     async def process_event_ws(self):
         await logger.log(f"Received event via websocket: {self.to_dict}")
         await self.db_save()
-        await ws_queue.broadcast(self.to_json)
+        await ws_queue.broadcast(self)
 
     @property
     def to_dict(self):
@@ -120,7 +120,8 @@ class tradingview_event(db_model_base,
         return None
 
     @classmethod
-    async def fetch_latest(cls,):
+    async def fetch_latest(cls,
+                           event_descriptor=None):
         result = None
         async with AsyncSession(db.engine,
                                 expire_on_commit=False) as session:
@@ -128,6 +129,8 @@ class tradingview_event(db_model_base,
                 stmt = (select(cls)
                         .limit(1)
                         .order_by(cls.timestamp_received.desc()))
+                if event_descriptor:
+                    stmt = stmt.where(cls.event_descriptor == event_descriptor)
                 result = (await session.execute(stmt)).fetchone()
                 if result:
                     result = result[0]
