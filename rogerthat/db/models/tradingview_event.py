@@ -23,7 +23,7 @@ class tradingview_event(db_model_base,
                         base_model):
     __tablename__ = 'tradingview_events'
     id = Column(BigInteger, primary_key=True, index=True, unique=True, autoincrement=True)
-    timestamp_recieved = Column(BigInteger, index=True)
+    timestamp_received = Column(BigInteger, index=True)
     timestamp_event = Column(BigInteger, index=True)
     event_descriptor = Column(String(100), index=True)
     command = Column(String(100), index=True)
@@ -46,7 +46,7 @@ class tradingview_event(db_model_base,
                  volume=Dec("0"),
                  inventory=Dec("0"),
                  ):
-        self.timestamp_recieved = int(time.time() * 1000)
+        self.timestamp_received = int(time.time() * 1000)
         self.timestamp_event = timestamp
         self.event_descriptor = event_descriptor
         self.command = command
@@ -93,7 +93,7 @@ class tradingview_event(db_model_base,
     @property
     def to_dict(self):
         return {
-            "timestamp_recieved": self.timestamp_recieved,
+            "timestamp_received": self.timestamp_received,
             "timestamp_event": self.timestamp_event,
             "event_descriptor": self.event_descriptor,
             "command": self.command,
@@ -127,7 +127,7 @@ class tradingview_event(db_model_base,
             async with session.begin():
                 stmt = (select(cls)
                         .limit(1)
-                        .order_by(cls.timestamp_recieved.desc()))
+                        .order_by(cls.timestamp_received.desc()))
                 result = (await session.execute(stmt)).fetchone()
                 if result:
                     result = result[0]

@@ -48,7 +48,7 @@ class wss_request:
             try:
                 remote_event = tradingview_event.from_json(data, raw=True)
                 if remote_event:
-                    event_id = f"{remote_event.timestamp_recieved}{remote_event.timestamp_event}"
+                    event_id = f"{remote_event.timestamp_received}{remote_event.timestamp_event}"
                     if event_id in self._received_events:
                         continue
                     await remote_event.process_event_ws()
