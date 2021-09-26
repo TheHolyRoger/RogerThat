@@ -345,8 +345,18 @@ This config is found inside your main hummingbot folder then `conf\conf_global.y
 remote_commands_enabled: true
 remote_commands_api_key: a9ba4b61-6f6d-41cf-85c3-7cfdfcbea0f3
 remote_commands_ws_url: ws://localhost:10073/wss
+# Specify a routing name for use with multiple Hummingbot instances
 remote_commands_routing_name: hummingbot_instance_1
+# Recommended to keep this on so no events are missed in the case of a network drop out.
 remote_commands_ignore_first_event: true
+# Whether to disable console command processing for remote command events.
+# Best to disable this if using in custom scripts or strategies
+remote_commands_disable_console_commands: false
+# You can specify how to translate received commands to Hummingbot commands here
+# eg.
+# remote_commands_translate_commands:
+#   long: start
+#   short: stop
 remote_commands_translate_commands:
   long: start
   short: stop
