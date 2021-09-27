@@ -4,16 +4,16 @@ __pycache__
 .ipynb_checkpoints
 *.pyc
 
-data/db
-
 cache/*
 !cache/.gitkeep
 cache_*
 *.bak*
 
-logs/
-configs/*.yml
-configs/*.env
-
-certs/server.crt
-certs/server.key
+data/*
+!data/.gitkeep
+logs/*
+!logs/.gitkeep
+configs/*
+!configs/.gitkeep
+certs/*
+!certs/.gitkeep
