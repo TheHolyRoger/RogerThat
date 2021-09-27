@@ -379,6 +379,16 @@ Where `event-descriptor` matches the `event_descriptor` or *name* value of the e
 
 </details>
 
+
+### Command Shortcuts
+
+<details>
+<summary>Expand ...</summary>
+
+Command shortcuts can be defined in Hummingbot's `conf_global.yml`, for more information see here: https://docs.hummingbot.io/operation/config-files/#create-command-shortcuts
+
+</details>
+
 ___
 
 ## Test Connection
