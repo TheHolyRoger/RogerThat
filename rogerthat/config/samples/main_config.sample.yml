@@ -10,5 +10,10 @@ app_name: rogerthat
 # Recommended to keep this on in case events are missed during a network drop out.
 rebroadcast_on_ws_connect: true
 
+# ADVANCED!
+# Setting this option to `true` will include extra order fields in sent data.
+# These fields won't do anything without your intervention, they require scripting of Hummingbot.
+include_extra_order_fields: false
+
 # Enabled debug mode
 debug_mode: false

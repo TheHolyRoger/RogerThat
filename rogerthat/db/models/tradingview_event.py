@@ -16,6 +16,11 @@ from rogerthat.db.models.base import (
     db_model_base,
 )
 from rogerthat.queues.ws_queue import ws_queue
+from rogerthat.utils.parsing_numbers import (
+    decimal_or_none,
+    decimal_or_zero,
+    int_or_none,
+)
 from rogerthat.utils.logger import logger
 
 
@@ -33,6 +38,11 @@ class tradingview_event(db_model_base,
     price = Column(Numeric, index=True)
     volume = Column(Numeric, index=True)
     inventory = Column(Numeric, index=True)
+    order_bid_spread = Column(Numeric, index=True)
+    order_ask_spread = Column(Numeric, index=True)
+    order_amount = Column(Numeric, index=True)
+    order_levels = Column(Numeric, index=True)
+    order_level_spread = Column(Numeric, index=True)
 
     def __init__(self,
                  from_json=None,
@@ -45,6 +55,11 @@ class tradingview_event(db_model_base,
                  price=Dec("0"),
                  volume=Dec("0"),
                  inventory=Dec("0"),
+                 order_bid_spread=None,
+                 order_ask_spread=None,
+                 order_amount=None,
+                 order_levels=None,
+                 order_level_spread=None,
                  ):
         self.timestamp_received = int(time.time() * 1000)
         self.timestamp_event = timestamp
@@ -56,20 +71,25 @@ class tradingview_event(db_model_base,
         self.price = price
         self.volume = volume
         self.inventory = inventory
+        self.order_bid_spread = order_bid_spread
+        self.order_ask_spread = order_ask_spread
+        self.order_amount = order_amount
+        self.order_levels = order_levels
+        self.order_level_spread = order_level_spread
         if from_json:
-            timestamp_event = from_json.get("timestamp")
-            interval = from_json.get("interval")
-            price = from_json.get("price")
-            volume = from_json.get("volume")
-            inventory = from_json.get("inventory")
-            self.timestamp_event = int(timestamp_event) if timestamp_event else None
+            self.timestamp_event = int_or_none(from_json.get("timestamp"))
             self.command = from_json.get("command")
             self.exchange = from_json.get("exchange")
             self.symbol = from_json.get("symbol")
-            self.interval = int(interval) if interval else None
-            self.price = Dec(str(price)) if price else Dec("0")
-            self.volume = Dec(str(price)) if volume else Dec("0")
-            self.inventory = Dec(str(price)) if inventory else Dec("0")
+            self.interval = int_or_none(from_json.get("interval"))
+            self.price = decimal_or_zero(from_json.get("price"))
+            self.volume = decimal_or_zero(from_json.get("volume"))
+            self.inventory = decimal_or_zero(from_json.get("inventory"))
+            self.order_bid_spread = decimal_or_none(from_json.get("order_bid_spread"))
+            self.order_ask_spread = decimal_or_none(from_json.get("order_ask_spread"))
+            self.order_amount = decimal_or_none(from_json.get("order_amount"))
+            self.order_levels = decimal_or_none(from_json.get("order_levels"))
+            self.order_level_spread = decimal_or_none(from_json.get("order_level_spread"))
             self.event_descriptor = from_json.get("event_descriptor")
             self._get_data_fields(from_json)
 
@@ -92,7 +112,7 @@ class tradingview_event(db_model_base,
 
     @property
     def to_dict(self):
-        return {
+        the_dict = {
             "timestamp_received": self.timestamp_received,
             "timestamp_event": self.timestamp_event,
             "event_descriptor": self.event_descriptor,
@@ -104,6 +124,13 @@ class tradingview_event(db_model_base,
             "volume": self.volume,
             "inventory": self.inventory,
         }
+        if Config.include_extra_order_fields:
+            the_dict["order_bid_spread"] = self.order_bid_spread
+            the_dict["order_ask_spread"] = self.order_ask_spread
+            the_dict["order_amount"] = self.order_amount
+            the_dict["order_levels"] = self.order_levels
+            the_dict["order_level_spread"] = self.order_level_spread
+        return the_dict
 
     @property
     def to_json(self):

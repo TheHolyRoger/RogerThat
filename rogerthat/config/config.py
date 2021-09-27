@@ -17,6 +17,7 @@ class ConfigSetup(no_setters):
     _app_name = _app_config['app_name']
     _debug_mode = _app_config['debug_mode']
     _rebroadcast_on_ws_connect = _app_config.get('rebroadcast_on_ws_connect', True)
+    _include_extra_order_fields = _app_config.get('include_extra_order_fields', False)
 
     # Web
     _server_host = _web_config['server_host']
