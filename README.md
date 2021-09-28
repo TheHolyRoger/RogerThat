@@ -2,6 +2,21 @@
 
 **RogerThat** is a standalone webserver designed to receive **TradingView** webhooks (or similar) and forward them to **Hummingbot** via websockets or REST queries.
 
+Whilst it's purpose is to bridge **TradingView** and **Hummingbot**, it can work as a gateway / bridge between any service that sends data via Webhooks and serve / route them to *multiple* **Hummingbot** instances.
+
+##### Menu
+
+- [Docker](#docker)
+  * [Installation](#installation)
+  * [Running](#running)
+  * [Configuration](#configuration)
+    + [Public access](#public-access)
+- [Usage](#usage)
+  * [TradingView Webhooks](#tradingview-webhooks)
+  * [Hummingbot Connection](#hummingbot-connection)
+  * [Test Connection](#test-connection)
+- [Source Installation (ADVANCED!!!)](#source-installation-advanced)
+
 # Docker
 ## Installation
 
