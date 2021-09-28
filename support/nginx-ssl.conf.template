@@ -1,5 +1,5 @@
 server {
-  listen 80 default_server;
+  listen 8080 default_server;
 
   server_name _;
 
@@ -7,7 +7,7 @@ server {
 }
 
 server {
-  listen 443 ssl;
+  listen 8443 ssl;
   server_name ${HOSTNAME};
   ssl_certificate /etc/nginx/rogerthat_certs/server.crt;
   ssl_certificate_key /etc/nginx/rogerthat_certs/server.key;
