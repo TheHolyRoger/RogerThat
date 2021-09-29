@@ -21,12 +21,12 @@ if not "%1" == "" GOTO Help
 
 if %dockerprune% == 1 (ECHO Pruning docker. && docker system prune -f)
 
-if %dontbuild% == 1 (ECHO Skipping build.) else (docker image prune -f && docker compose build)
+if %dontbuild% == 1 (ECHO Skipping build.) else (docker image prune -f && docker-compose build)
 
 REM Run setup script via docker
 CALL scripts\setup_config.bat -s
 
-if %nostart% == 1 ( ECHO Skipping start.) else (docker compose up)
+if %nostart% == 1 ( ECHO Skipping start.) else (docker-compose up db rogerthat nginx)
 
 EXIT /B 0
 

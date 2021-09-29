@@ -37,4 +37,8 @@ server {
     proxy_set_header X-Frame-Options SAMEORIGIN;
     proxy_pass http://rogerthat:${API_PORT}/api/tv_webhook/;
   }
+
+  location /.well-known/acme-challenge/ {
+    root /var/www/certbot;
+  }
 }

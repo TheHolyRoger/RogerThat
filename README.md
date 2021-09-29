@@ -131,7 +131,37 @@ Since **TradingView** requires a publicly accessible URL for webhook alerts, you
 
 You'll also need to open up (and forward) port **80** (or **443** if using HTTPS) in your firewall/router to the machine running **RogerThat**.
 
+You must change/set your hostname before enabling HTTPS with **letsencrypt**
+
 **(Do NOT open up port 10073 externally)**
+
+#### Change Hostname
+
+<details>
+<summary>Expand ...</summary>
+
+Change the hostname to listen on for the public **TradingView** webhook with the following command:
+
+(Do not use a full URL here, the hostname is the part of the URL after https:// and before any other slashes)
+
+<details>
+<summary>Linux/Mac</summary>
+
+```bash
+scripts/setup_config.sh --hostname yourhostname.com
+scripts/setup_config.sh --hostname 1.2.3.4
+```
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+scripts\setup_config.bat --hostname yourhostname.com
+scripts\setup_config.bat --hostname 1.2.3.4
+```
+</details>
+
+</details>
 
 #### Cloudflare (Recommended)
 
@@ -161,12 +191,30 @@ Services you can use for dynamic DNS with a non-static public IP address are:
 
 </details>
 
-#### Enabling HTTPS (Optional)
+#### Enabling HTTPS (Recommended, required for Cloudflare)
 
 <details>
 <summary>Expand ...</summary>
 
-Place both your certificate and key in `./certs` folder named `server.crt` and `server.key` ([LetsEncrypt](https://letsencrypt.org/getting-started/) is recommended).
+To setup ([LetsEncrypt](https://letsencrypt.org/getting-started/) run the following commands.
+
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **You must set your hostname first and forward port 80 on your firewall!**
+
+<details>
+<summary>Linux/Mac</summary>
+
+```bash
+scripts/enable_ssl_letsencrypt.sh
+```
+
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+scripts/enable_ssl_letsencrypt.bat
+```
+</details>
 
 Or run the following command to generate a self-signed key pair:
 
@@ -186,33 +234,9 @@ scripts\generate_self_signed_cert.bat
 ```
 </details>
 
-</details>
+After enabling HTTPS you can now forward port 443 and close port 80.
 
-#### Change Hostname (Optional)
-
-<details>
-<summary>Expand ...</summary>
-
-Change the hostname to listen on for the public **TradingView** webhook with the following command:
-
-(Do not use a full URL here, the hostname is the part of the URL after https:// and before any other slashes)
-
-<details>
-<summary>Linux/Mac</summary>
-
-```bash
-scripts/setup_config.sh --hostname yourhostname.com
-scripts/setup_config.sh --hostname 1.2.3.4
-```
-</details>
-<details>
-<summary>Windows</summary>
-
-```bat
-scripts\setup_config.bat --hostname yourhostname.com
-scripts\setup_config.bat --hostname 1.2.3.4
-```
-</details>
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **It is recommended to close port 80**
 
 </details>
 

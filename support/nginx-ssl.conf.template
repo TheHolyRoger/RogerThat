@@ -9,8 +9,10 @@ server {
 server {
   listen 8443 ssl;
   server_name ${HOSTNAME};
-  ssl_certificate /etc/nginx/rogerthat_certs/server.crt;
-  ssl_certificate_key /etc/nginx/rogerthat_certs/server.key;
+  ssl_certificate /etc/letsencrypt/live/${HOSTNAME}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/${HOSTNAME}/privkey.pem;
+  include /etc/letsencrypt/conf/options-ssl-nginx.conf;
+  ssl_dhparam /etc/letsencrypt/conf/ssl-dhparams.pem;
 
   set_real_ip_from 103.21.244.0/22;
   set_real_ip_from 103.22.200.0/22;

@@ -46,7 +46,7 @@ if [ "${dontbuild} " == "1 " ]; then
     echo "Skipping build."
 else
     docker image prune -f
-    docker compose build
+    docker-compose build
 fi
 
 echo "Calling setup script"
@@ -57,5 +57,5 @@ scripts/setup_config.sh -s
 if [ "${nostart} " == "1 " ]; then
     echo "Skipping start."
 else
-    docker compose up
+    docker-compose up db rogerthat nginx
 fi

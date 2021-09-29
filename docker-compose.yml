@@ -11,7 +11,7 @@ services:
   nginx:
     image: nginx:latest
     entrypoint: /nginx-entrypoint.sh
-    command: ["nginx", "-g", "daemon off;"]
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     depends_on:
       - rogerthat
     env_file:
@@ -20,10 +20,22 @@ services:
       - ./support/nginx-entrypoint.sh:/nginx-entrypoint.sh
       - ./support/nginx-default.conf.template:/etc/nginx/conf.d/default.conf.template
       - ./support/nginx-ssl.conf.template:/etc/nginx/conf.d/ssl.conf.template
-      - ./certs:/etc/nginx/rogerthat_certs
+      - ./data/certbot/certs:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     ports:
       - 80:8080
       - 443:8443
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    env_file:
+      - ./configs/env_nginx.env
+    volumes:
+      - ./support/generate_self_signed_cert.sh:/generate_self_signed_cert.sh
+      - ./support/letsencrypt_download_params.sh:/letsencrypt_download_params.sh
+      - ./support/letsencrypt_generate.sh:/letsencrypt_generate.sh
+      - ./data/certbot/certs:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
   rogerthat:
     build: .
     image: theholiestroger/rogerthat:latest

@@ -81,8 +81,7 @@ ENV INSTALLATION_TYPE=docker
 RUN useradd -m -s /bin/bash rogerthat && \
   ln -s /configs /home/rogerthat/configs && \
   ln -s /logs /home/rogerthat/logs && \
-  ln -s /data /home/rogerthat/data && \
-  ln -s /certs /home/rogerthat/certs
+  ln -s /data /home/rogerthat/data
 
 # Create mount points
 RUN mkdir /configs /logs /data /certs && chown -R rogerthat:rogerthat /configs /logs /data /certs

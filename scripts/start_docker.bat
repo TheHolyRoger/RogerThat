@@ -19,7 +19,7 @@ if %dockerprune% == 1 (ECHO Pruning docker. && docker system prune -f)
 REM Run setup script via docker
 CALL scripts\setup_config.bat -s
 
-docker compose up
+docker-compose up db rogerthat nginx
 
 EXIT /B 0
 

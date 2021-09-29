@@ -41,4 +41,4 @@ fi
 # Run setup script via docker
 scripts/setup_config.sh -s
 
-docker compose up
+docker-compose up db rogerthat nginx

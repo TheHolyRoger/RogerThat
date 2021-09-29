@@ -11,9 +11,10 @@ cache_*
 
 data/*
 !data/.gitkeep
+!data/certbot
+data/certbot/*
+!data/certbot/.gitkeep
 logs/*
 !logs/.gitkeep
 configs/*
 !configs/.gitkeep
-certs/*
-!certs/.gitkeep
