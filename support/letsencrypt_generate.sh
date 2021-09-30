@@ -5,7 +5,7 @@ data_path="/etc/letsencrypt"
 
 if [ "$domains" == "localhost" ]; then
   echo "ERROR: Cannot use localhost with letsencrypt."
-  exit 0
+  exit 1
 fi
 
 rm -Rf "$data_path/live/$domains" && \

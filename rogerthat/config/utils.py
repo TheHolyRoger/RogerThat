@@ -183,8 +183,8 @@ class config_utils:
     def check_configs(cls):
         for conf in cls._conf_file_list:
             cls.check_conf_version(conf)
-        cls.generate_env_postgres(safe=True)
-        cls.generate_env_nginx(safe=True)
+        cls.generate_env_postgres()
+        cls.generate_env_nginx()
 
     @classmethod
     def update_configs(cls):

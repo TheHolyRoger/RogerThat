@@ -34,10 +34,12 @@ unzip master.zip
 
 Change directory:
 ```bash
-cd RogerThat
+cd RogerThat-master
 ```
 
 ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **You must always run scripts from the main project directory, do not switch to the `scripts` directory**
+
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **Do not run as root.**
 
 </details>
 <details>
@@ -93,6 +95,8 @@ scripts\start_docker.bat -d
 ```
 </details>
 
+Upon successful launch, navigating to `http://localhost/` in your browser (or your public domain) will show a 404 not found page.
+
 ___
 
 ## Configuration
@@ -140,7 +144,7 @@ You must change/set your hostname before enabling HTTPS with **letsencrypt**
 <details>
 <summary>Expand ...</summary>
 
-Change the hostname to listen on for the public **TradingView** webhook with the following command:
+Change the hostname to listen on for the public **TradingView** webhook with the following commands:
 
 (Do not use a full URL here, the hostname is the part of the URL after https:// and before any other slashes)
 
@@ -160,6 +164,8 @@ scripts\setup_config.bat --hostname yourhostname.com
 scripts\setup_config.bat --hostname 1.2.3.4
 ```
 </details>
+
+If using your own domain name, it is recommended to use a long and not obvious subdomain as the hostname eg: `thereisnotraderhere.mydomain.com`.
 
 </details>
 
@@ -204,7 +210,7 @@ To setup ([LetsEncrypt](https://letsencrypt.org/getting-started/) run the follow
 <summary>Linux/Mac</summary>
 
 ```bash
-scripts/enable_ssl_letsencrypt.sh
+scripts/generate_cert_letsencrypt.sh
 ```
 
 </details>
@@ -212,7 +218,7 @@ scripts/enable_ssl_letsencrypt.sh
 <summary>Windows</summary>
 
 ```bat
-scripts/enable_ssl_letsencrypt.bat
+scripts/generate_cert_letsencrypt.bat
 ```
 </details>
 
@@ -222,7 +228,7 @@ Or run the following command to generate a self-signed key pair:
 <summary>Linux/Mac</summary>
 
 ```bash
-scripts/generate_self_signed_cert.sh
+scripts/generate_cert_self_signed.sh
 ```
 
 </details>
@@ -230,11 +236,11 @@ scripts/generate_self_signed_cert.sh
 <summary>Windows</summary>
 
 ```bat
-scripts\generate_self_signed_cert.bat
+scripts\generate_cert_self_signed.bat
 ```
 </details>
 
-After enabling HTTPS you can now forward port 443 and close port 80.
+After enabling HTTPS you can now forward port 443, close port 80 and start RogerThat.
 
 ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **It is recommended to close port 80**
 
