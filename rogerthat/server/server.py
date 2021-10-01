@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from quart import (
     Quart,
 )
@@ -25,6 +26,8 @@ from rogerthat.utils.misc import (
 # *
 # Quart server stuff
 # *
+logging.getLogger('quart.app').setLevel(logging.ERROR)
+logging.getLogger('quart.serving').setLevel(logging.ERROR)
 quart_server = Quart(f"{Config.app_name}/API")
 quart_server.config["QUART_AUTH_COOKIE_DOMAIN"] = Config.server_host
 if Config.debug_mode:

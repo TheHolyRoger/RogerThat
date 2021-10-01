@@ -40,6 +40,8 @@ export PGID=$(id -g)
 if [ "${dockerprune} " == "1 " ]; then
     echo "Pruning docker."
     docker system prune -f
+    docker rmi theholiestroger/nginx-iptables:latest
+    docker rmi theholiestroger/rogerthat:latest
 fi
 
 if [ "${dontbuild} " == "1 " ]; then

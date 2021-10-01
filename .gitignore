@@ -18,3 +18,5 @@ logs/*
 !logs/.gitkeep
 configs/*
 !configs/.gitkeep
+
+.rogerthat.pid

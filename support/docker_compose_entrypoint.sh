@@ -18,4 +18,30 @@ fi
 CONDA_BIN=$(dirname ${CONDA_EXE})
 source "${CONDA_BIN}/activate" rogerthat
 
-~/wait-for-it.sh db:5432 -- scripts/setup.py -s && sleep 10 && bin/start_rogerthat.py
+~/wait-for-it.sh -t 40 db:5432
+
+scripts/setup.py -s
+
+sleep 10
+
+killpg(){
+  echo "Beginning RogerThat Shutdown."
+  rogerthat_pid=`cat .rogerthat.pid`
+  echo "Killing PID $rogerthat_pid."
+  kill "$rogerthat_pid"
+  while [ "$(ps -ax | grep [p]ython)" != "" ]; do
+    sleep 1s
+  done
+  echo "Finished Shutdown."
+  exit 0
+}
+
+trap killpg INT TERM
+
+bin/start_rogerthat.py &
+
+while :; do
+    sleep 1s
+done
+
+exit 0

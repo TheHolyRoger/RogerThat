@@ -2,6 +2,7 @@
 import argparse
 import path_util  # noqa: F401
 from rogerthat.config.utils import config_utils
+from rogerthat.utils.splash import splash_msg
 
 
 def parse_args():
@@ -30,11 +31,16 @@ def parse_args():
                         help="Enable iptables firewall rules to only allow Cloudflare traffic.")
     parser.add_argument('--disable-iptables-cloudflare', dest="disable_iptables", action='store_true',
                         help="Disable iptables firewall rules to only allow Cloudflare traffic.")
+    parser.add_argument('--print-splash', dest="print_splash", action='store_true',
+                        help="Print launch screen.")
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
+    if args.print_splash:
+        print(splash_msg)
+        quit()
     if args.delete_configs:
         config_utils.delete_existing_configs()
     if args.setup_configs:

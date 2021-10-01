@@ -13,6 +13,7 @@ usage() {
     echo -e "${REV}Usage:${NORM} ${BOLD}$0 [ -p ]${NORM}"\\n 1>&2
     echo -e "Use the following optional switches."\\n 1>&2
     echo "${REV}-p${NORM}  --Prune docker." 1>&2
+    echo "${REV}-d${NORM}  --Run as Daemon." 1>&2
     echo -e \\n 1>&2
 }
 
@@ -24,6 +25,7 @@ exit_abnormal() {                         # Function: Exit with error.
 while getopts ":hndp" flag
 do
     case "${flag}" in
+        d) daemon=1;;
         p) dockerprune=1;;
         h) exit_abnormal;;
         \?) exit_abnormal;;
@@ -41,4 +43,9 @@ fi
 # Run setup script via docker
 scripts/setup_config.sh -s
 
-docker-compose up db rogerthat nginx
+if [ "${daemon} " == "1 " ]; then
+    docker-compose up -d db rogerthat nginx
+    scripts/setup_config.sh  --print-splash
+else
+    docker-compose up db rogerthat nginx
+fi

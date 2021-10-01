@@ -3,7 +3,7 @@ import os
 import time
 import shutil
 from rogerthat.config.config import Config
-from rogerthat.utils.file_writing import append_to_file
+from rogerthat.utils.file_writing import append_to_file, append_to_file_blocking
 
 
 class logger_cls:
@@ -26,6 +26,14 @@ class logger_cls:
         print(string)
         if self.log_file:
             await append_to_file(string, self.log_file)
+        return True
+
+    def logb(self, string):
+        timeNow = datetime.now()
+        string = f"[{timeNow}] {string}"
+        print(string)
+        if self.log_file:
+            append_to_file_blocking(string, self.log_file)
         return True
 
     def cycle(self):

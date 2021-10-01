@@ -9,6 +9,7 @@ Whilst it's purpose is to bridge **TradingView** and **Hummingbot**, it can work
 - [Docker](#docker)
   * [Installation](#installation)
   * [Running](#running)
+  * [Stopping](#stopping)
   * [Configuration](#configuration)
     + [Public access](#public-access)
 - [Usage](#usage)
@@ -78,10 +79,14 @@ ___
 
 ## Running
 
-Run without re-building:
-
 <details>
 <summary>Linux/Mac</summary>
+
+```bash
+./scripts/start_docker.sh
+```
+
+OR as daemon (in background):
 
 ```bash
 ./scripts/start_docker.sh -d
@@ -91,11 +96,26 @@ Run without re-building:
 <summary>Windows</summary>
 
 ```bat
+scripts\start_docker.bat
+```
+
+OR as daemon (in background):
+
+```bat
 scripts\start_docker.bat -d
 ```
 </details>
 
 Upon successful launch, navigating to `http://localhost/` in your browser (or your public domain) will show a 404 not found page.
+
+___
+
+## Stopping
+
+Run the following command to stop RogerThat:
+```bash
+docker-compose stop
+```
 
 ___
 

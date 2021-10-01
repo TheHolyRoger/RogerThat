@@ -6,10 +6,12 @@ cd  %ParentFolderName%
 
 @SET SCRIPT=%~nx0
 @SET FNAME=%~f0
+@SET daemon=0
 @SET dockerprune=0
 
 :GETOPTS
     if /I "%1" == "-h" GOTO Help
+    if /I "%1" == "-d" SET daemon=1 & SHIFT
     if /I "%1" == "-p" SET dockerprune=1 & SHIFT
     SHIFT
 if not "%1" == "" GOTO Help
@@ -19,7 +21,7 @@ if %dockerprune% == 1 (ECHO Pruning docker. && docker system prune -f)
 REM Run setup script via docker
 CALL scripts\setup_config.bat -s
 
-docker-compose up db rogerthat nginx
+if %daemon% == 1 (docker-compose up db rogerthat nginx) else (docker-compose up -d db rogerthat nginx && scripts\setup_config.bat  --print-splash)
 
 EXIT /B 0
 
@@ -27,9 +29,10 @@ EXIT /B 0
 ECHO.
 ECHO Help documentation for %SCRIPT%
 ECHO.
-ECHO Usage: %FNAME% [ -p ]
+ECHO Usage: %FNAME% [ -p ] [ -d ]
 ECHO.
 ECHO Use the following optional switches.
 ECHO.
 ECHO -p  --Prune docker.
+ECHO -d  --Run as daemon.
 GOTO:EOF
