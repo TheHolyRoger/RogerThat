@@ -25,7 +25,11 @@ def parse_args():
     parser.add_argument('--enable-websocket-auth', dest="enable_websocket_auth", action='store_true',
                         help="Enable websockets authentication.")
     parser.add_argument('--disable-websocket-auth', dest="disable_websocket_auth", action='store_true',
-                        help="Enable websockets authentication.")
+                        help="Disable websockets authentication.")
+    parser.add_argument('--enable-iptables-cloudflare', dest="enable_iptables", action='store_true',
+                        help="Enable iptables firewall rules to only allow Cloudflare traffic.")
+    parser.add_argument('--disable-iptables-cloudflare', dest="disable_iptables", action='store_true',
+                        help="Disable iptables firewall rules to only allow Cloudflare traffic.")
     return parser.parse_args()
 
 
@@ -36,24 +40,25 @@ if __name__ == "__main__":
     if args.setup_configs:
         config_utils.copy_fresh_templates()
     if args.setup_configs_if_blank:
-        config_utils.copy_fresh_templates(True)
+        config_utils.check_configs()
     if args.generate_api_key_tv:
-        config_utils.copy_fresh_templates(True)
+        config_utils.check_configs()
         config_utils.save_new_api_key_tv()
     if args.generate_api_key_hbot:
-        config_utils.copy_fresh_templates(True)
+        config_utils.check_configs()
         config_utils.save_new_api_key_hbot()
     if args.generate_quart_secrets:
-        config_utils.copy_fresh_templates(True)
+        config_utils.check_configs()
         config_utils.generate_quart_secrets()
     if args.hostname:
-        config_utils.copy_fresh_templates(True)
+        config_utils.check_configs()
         config_utils.save_new_hostname(args.hostname)
     if args.enable_websocket_auth or args.disable_websocket_auth:
-        config_utils.copy_fresh_templates(True)
-        config_utils.toggle_websocket_auth(disable=True if args.disable_websocket_auth else False)
-    if args.update_configs:
-        config_utils.copy_fresh_templates(True)
-        config_utils.update_configs()
-    if not args.delete_configs:
         config_utils.check_configs()
+        config_utils.toggle_websocket_auth(disable=True if args.disable_websocket_auth else False)
+    if args.enable_iptables or args.disable_iptables:
+        config_utils.check_configs()
+        config_utils.toggle_iptables(enable=True if args.enable_iptables else False)
+    if args.update_configs:
+        config_utils.check_configs()
+        config_utils.update_configs()

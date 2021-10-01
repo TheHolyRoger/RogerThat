@@ -120,6 +120,13 @@ class config_utils:
         cls.generate_env_nginx()
 
     @classmethod
+    def toggle_iptables(cls, enable=False):
+        config = cls.load_config(cls._conf_file_web)
+        config["protect_with_cloudflare_firewall_rules"] = bool(enable)
+        cls.save_config(config, cls._conf_file_web)
+        cls.generate_env_nginx()
+
+    @classmethod
     def toggle_websocket_auth(cls, disable):
         config = cls.load_config(cls._conf_file_web)
         config["disable_websocket_authentication"] = bool(disable)
@@ -147,10 +154,13 @@ class config_utils:
         config = cls.load_config(cls._conf_file_web)
         hostname = config["server_host"]
         port = config["quart_server_port"]
+        use_iptables = config["protect_with_cloudflare_firewall_rules"]
         with open(nginx_env_path, "w+") as fp:
             fp.write(cls._auto_gen_str)
             fp.write(f"HOSTNAME={hostname}\n")
             fp.write(f"API_PORT={port}\n")
+            if use_iptables:
+                fp.write("ADD_CLOUDFLARE_IPTABLES=1\n")
 
     @classmethod
     def copy_fresh_templates(cls, safe=False):
@@ -181,6 +191,7 @@ class config_utils:
 
     @classmethod
     def check_configs(cls):
+        cls.copy_fresh_templates(True)
         for conf in cls._conf_file_list:
             cls.check_conf_version(conf)
         cls.generate_env_postgres()

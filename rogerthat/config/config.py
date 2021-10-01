@@ -28,6 +28,7 @@ class ConfigSetup(no_setters):
     _quart_auth_pep = _web_config['quart_auth_pep']
     _quart_auth_csalt = _web_config['quart_auth_csalt']
     _quart_server_port = _web_config['quart_server_port']
+    _protect_with_cloudflare_firewall_rules = _web_config.get('protect_with_cloudflare_firewall_rules', False)
 
     # Database
     _database_protocol = _db_config.get("database_protocol", "postgresql+asyncpg")

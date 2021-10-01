@@ -9,7 +9,11 @@ services:
       - ./configs/env_postgres.env
     # user: "${PUID:-1000}:${PGID:-1000}"
   nginx:
-    image: nginx:latest
+    # build:
+    #   context: ./nginx-iptables
+    image: theholiestroger/nginx-iptables:latest
+    cap_add:
+      - NET_ADMIN
     entrypoint: /nginx-entrypoint.sh
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     depends_on:

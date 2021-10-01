@@ -1,7 +1,7 @@
 #########################################
 ###         Web Server config         ###
 #########################################
-template_version: 0.1
+template_version: 0.2
 
 # Server HOSTNAME to listen on publicly
 # (Just the HOSTNAME, not the full URL)
@@ -34,3 +34,6 @@ quart_secret_key: XXXXXXXXXXXXXXXXX
 quart_cookie_domain_debug: localhost
 quart_auth_pep: XXXXXXXXXXXXXXXXX
 quart_auth_csalt: some salt here
+
+# Protect nginx with iptables firewall rules to only allow traffic routed through Cloudflare
+protect_with_cloudflare_firewall_rules: false
