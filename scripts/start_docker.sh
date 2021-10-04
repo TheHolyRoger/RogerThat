@@ -32,8 +32,12 @@ do
     esac
 done
 
-export PUID=$(id -u)
-export PGID=$(id -g)
+if [[ -n "$IS_WSL" || -n "$WSL_DISTRO_NAME" ]]; then
+    echo "Running on WSL."
+else
+    export PUID=$(id -u)
+    export PGID=$(id -g)
+fi
 
 if [ "${dockerprune} " == "1 " ]; then
     echo "Pruning docker."

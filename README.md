@@ -52,6 +52,8 @@ Open up Windows CMD and **switch directory to the extracted zip folder**.
 
 ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **You must always run scripts from the main project directory, do not switch to the `scripts` directory**
 
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **If using Ubuntu WSL with Docker for Windows, you must enable permissions first, [see here](https://stackoverflow.com/a/50856772/16574146)**
+
 </details>
 
 Then run the following commands to launch the docker image:

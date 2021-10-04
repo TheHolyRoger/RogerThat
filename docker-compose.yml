@@ -4,19 +4,16 @@ services:
   db:
     image: postgres:bullseye
     stop_signal: SIGINT
-    shm_size: 256M
     volumes:
-      - ./support/postgres_entrypoint.sh:/postgres_entrypoint.sh
       - ./data/db:/var/lib/postgresql/data
     env_file:
       - ./configs/env_postgres.env
-    user: "${PUID:-1000}:${PGID:-1000}"
+    user: "${PUID:-999}:${PGID:-999}"
   nginx:
     image: theholiestroger/nginx-iptables:latest
     cap_add:
       - NET_ADMIN
     entrypoint: /nginx-entrypoint.sh
-    # shm_size: 256M
     # command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     command: ["nginx", "-g", "daemon off;"]
     depends_on:
