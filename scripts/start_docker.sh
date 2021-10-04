@@ -14,6 +14,7 @@ usage() {
     echo -e "Use the following optional switches."\\n 1>&2
     echo "${REV}-p${NORM}  --Prune docker." 1>&2
     echo "${REV}-d${NORM}  --Run as Daemon." 1>&2
+    echo "${REV}-c${NORM}  --Run with certbot renewing every 6 hours (Requires certificate to be set-up)." 1>&2
     echo -e \\n 1>&2
 }
 
@@ -27,6 +28,7 @@ do
     case "${flag}" in
         d) daemon=1;;
         p) dockerprune=1;;
+        c) withcertbot=1;;
         h) exit_abnormal;;
         \?) exit_abnormal;;
     esac
@@ -34,9 +36,12 @@ done
 
 if [[ -n "$IS_WSL" || -n "$WSL_DISTRO_NAME" ]]; then
     echo "Running on WSL."
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Running on OSX."
 else
     export PUID=$(id -u)
     export PGID=$(id -g)
+    echo "Running on the good stuff as UID ${PUID} GID ${PGID}"
 fi
 
 if [ "${dockerprune} " == "1 " ]; then
@@ -44,12 +49,21 @@ if [ "${dockerprune} " == "1 " ]; then
     docker system prune -f
 fi
 
+if [ "${withcertbot} " == "1 " ]; then
+    echo "Running with certbot."
+    s_cb=" certbot"
+fi
+
+if [ "${daemon} " == "1 " ]; then
+    echo "Running as daemon."
+    s_dm=" -d"
+fi
+
 # Run setup script via docker
 scripts/setup_config.sh -s
 
+docker-compose up${s_dm} db rogerthat nginx${s_cb}
+
 if [ "${daemon} " == "1 " ]; then
-    docker-compose up -d db rogerthat nginx
     scripts/setup_config.sh  --print-splash
-else
-    docker-compose up db rogerthat nginx
 fi

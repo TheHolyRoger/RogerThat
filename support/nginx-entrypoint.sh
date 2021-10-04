@@ -27,4 +27,7 @@ if [ "${ADD_CLOUDFLARE_IPTABLES:-}" != "" ]; then
   $iptables -I INPUT -p tcp -m multiport --dports "$http_port,$https_port" -s "$host_ip" -j ACCEPT
 fi
 
+# Reload every 6h in background
+while :; do sleep 6h & wait $!; nginx -s reload; done &
+
 exec "$@"

@@ -36,9 +36,12 @@ done
 
 if [[ -n "$IS_WSL" || -n "$WSL_DISTRO_NAME" ]]; then
     echo "Running on WSL."
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    echo "Running on OSX."
 else
     export PUID=$(id -u)
     export PGID=$(id -g)
+    echo "Running on the good stuff as UID ${PUID} GID ${PGID}"
 fi
 
 if [ "${dockerprune} " == "1 " ]; then
