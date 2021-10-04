@@ -1,8 +1,12 @@
 # RogerThat
 
-**RogerThat** is a standalone webserver designed to receive **TradingView** webhooks (or similar) and forward them to **Hummingbot** via websockets or REST queries.
+**RogerThat** is a standalone python web server designed to receive **TradingView** alerts (or similar) and forward them to **Hummingbot**.
 
-Whilst it's purpose is to bridge **TradingView** and **Hummingbot**, it can work as a gateway / bridge between any service that sends data via Webhooks and serve / route them to *multiple* **Hummingbot** instances.
+**TradingView** is a widely used market market tracker that allows users to create, share and use custom strategies but is quite limited in how it can be "plugged in" to other services. It does however allow the creation of "**Alerts**" which can send data to a webhook (public URL).
+
+**RogerThat** facilitates the collection and forwarding of these **TradingView Alerts** to **Hummingbot** via the **Remote Command Executor** module, which listens to **RogerThat** via a websocket for received commands and updates.
+
+Whilst it's purpose is to bridge **TradingView** and **Hummingbot**, it can work as a gateway / bridge between any service that sends data via Webhooks (to a public URL) and serve / route them to *multiple* **Hummingbot** instances.
 
 ##### Menu
 
@@ -157,9 +161,11 @@ Since **TradingView** requires a publicly accessible URL for webhook alerts, you
 
 You'll also need to open up (and forward) port **80** (or **443** if using HTTPS) in your firewall/router to the machine running **RogerThat**.
 
-You must change/set your hostname before enabling HTTPS with **letsencrypt**
+It is recommended to use **Cloudflare** with **HTTPS** to hide your IP address.
 
-**(Do NOT open up port 10073 externally)**
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **You must change/set your hostname before enabling HTTPS with letsencrypt**
+
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **(Do NOT open up port 10073 externally)**
 
 #### Change Hostname
 
