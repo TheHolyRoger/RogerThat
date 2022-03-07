@@ -25,7 +25,8 @@ Whilst it's purpose is to bridge **TradingView** and **Hummingbot**, it can work
 # Docker
 ## Installation
 
-[**Install Docker**](https://docs.docker.com/get-docker/)
+[**Install Docker**](https://docs.docker.com/engine/install/)
+[**Install Docker Compose**](https://docs.docker.com/compose/install/)
 
 Download and extract this [**whole repository**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
 
@@ -44,7 +45,7 @@ cd RogerThat-master
 
 ![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **You must always run scripts from the main project directory, do not switch to the `scripts` directory**
 
-![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **Do not run as root.**
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) :warning: **Do not run as root!!!**
 
 </details>
 <details>
