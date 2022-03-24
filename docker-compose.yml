@@ -5,6 +5,8 @@ services:
     image: postgres:bullseye
     stop_signal: SIGINT
     volumes:
+      - ./support/start_postgres.sh:/docker-entrypoint-initdb.d/0-start_postgres.sh
+      - ./support/postgresql.conf:/db_config.conf
       - ./data/db:/var/lib/postgresql/data
     env_file:
       - ./configs/env_postgres.env
