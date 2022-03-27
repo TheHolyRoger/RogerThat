@@ -8,13 +8,13 @@ dependencies:
   - psycopg2
   - pip:
     - aiofiles==0.7.0
-    - alembic==1.7.3
-    - asyncpg==0.24.0
+    - alembic==1.7.7
+    - asyncpg==0.25.0
     - pre-commit==2.15.0
     - python-dateutil==2.8.2
-    - quart==0.15.1
-    - quart-auth==0.5.0
+    - quart==0.17.0
+    - quart-auth==0.6.0
     - ruamel-yaml==0.17.16
-    - sqlalchemy==1.4.23
+    - sqlalchemy==1.4.32
     - ujson==4.1.0
-    - websockets==10.0
+    - websockets==10.2

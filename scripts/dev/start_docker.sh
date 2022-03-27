@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 cd $(dirname $0)/../..
 
@@ -47,15 +48,15 @@ fi
 if [ "${dockerprune} " == "1 " ]; then
     echo "Pruning docker."
     docker system prune -f
-    docker rmi theholiestroger/nginx-iptables:latest
-    docker rmi theholiestroger/rogerthat:latest
+    docker rmi theholiestroger/nginx-iptables:latest || true
+    docker rmi theholiestroger/rogerthat:latest || true
 fi
 
 if [ "${dontbuild} " == "1 " ]; then
     echo "Skipping build."
 else
     docker image prune -f
-    docker-compose build
+    docker-compose build --progress plain
 fi
 
 echo "Calling setup script"

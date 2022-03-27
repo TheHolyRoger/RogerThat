@@ -16,7 +16,7 @@ USER rogerthat:rogerthat
 WORKDIR /home/rogerthat
 
 # Install miniconda
-RUN curl https://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.2-Linux-x86_64.sh -o ~/miniconda.sh && \
+RUN curl https://repo.anaconda.com/miniconda/Miniconda3-py39_4.11.0-Linux-x86_64.sh -o ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b && \
     rm ~/miniconda.sh && \
     ~/miniconda3/bin/conda update -n base conda -y && \
