@@ -10,6 +10,10 @@ from rogerthat.db.models import (
 )
 from rogerthat.db.engine import db
 from rogerthat.db.fetch_alembic_revision import fetch_alembic_revision
+from rogerthat.logging.configure import AsyncioLogger
+
+
+logger = AsyncioLogger.get_logger_db(__name__)
 
 
 class database_init():
@@ -23,40 +27,40 @@ class database_init():
 
     @classmethod
     async def create_db(cls):
-        await db.log("Database does not exist yet, creating.")
+        logger.info("Database does not exist yet, creating.")
         async with db.engine_root.connect() as conn:
             await conn.execute(text(f"CREATE DATABASE {Config.database_name}"))
         return True
 
     @classmethod
     async def create_tables(cls):
-        await db.log("Creating new or missing db tables.")
+        logger.info("Creating new or missing db tables.")
         async with db.engine.begin() as conn:
             await conn.run_sync(cls._meta.create_all)
-        await db.log("Done creating tables.")
+        logger.info("Done creating tables.")
         return True
 
     @classmethod
     async def initialise(cls):
-        await db.log("Database init.")
+        logger.info("Database init.")
         try:
             await cls.create_tables()
         except Exception:
-            await db.log("Failed to create tables.")
+            logger.error("Failed to create tables.")
             await cls.create_db()
             await cls.create_tables()
 
-        await db.log("Checking alembic.")
+        logger.info("Checking alembic.")
         try:
             current_revision = fetch_alembic_revision()
         except Exception as e:
-            await db.log(f"Alembic exception: {e}")
+            logger.error(f"Alembic exception: {e}")
             current_revision = None
         if not current_revision:
-            await db.log("First time init, stamping revision.")
+            logger.info("First time init, stamping revision.")
             alembic_cmd.stamp(cls._alembic_cfg, "head")
         else:
-            await db.log("Running alembic migration.")
+            logger.info("Running alembic migration.")
             alembic_cmd.upgrade(cls._alembic_cfg, "head")
         return True
 

@@ -21,7 +21,10 @@ from rogerthat.utils.parsing_numbers import (
     decimal_or_zero,
     int_or_none,
 )
-from rogerthat.utils.logger import logger
+from rogerthat.logging.configure import AsyncioLogger
+
+
+logger = AsyncioLogger.get_logger_main(__name__)
 
 
 class tradingview_event(db_model_base,
@@ -101,12 +104,12 @@ class tradingview_event(db_model_base,
                     break
 
     async def process_event(self):
-        await logger.log(f"Received event from TradingView: {self.to_dict}")
+        logger.info(f"Received event from TradingView: {self.to_dict}")
         await self.db_save()
         await ws_queue.broadcast(self)
 
     async def process_event_ws(self):
-        await logger.log(f"Received event via websocket: {self.to_dict}")
+        logger.info(f"Received event via websocket: {self.to_dict}")
         await self.db_save()
         await ws_queue.broadcast(self)
 

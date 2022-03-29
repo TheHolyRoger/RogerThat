@@ -1,7 +1,10 @@
 import asyncio
 from functools import wraps
-from rogerthat.utils.logger import logger
 from rogerthat.utils.regexes import regexes
+from rogerthat.logging.configure import AsyncioLogger
+
+
+logger = AsyncioLogger.get_logger_main(__name__)
 
 
 class websockets_queue:
@@ -52,11 +55,11 @@ class websockets_queue:
         return wrapper
 
     async def broadcast(self, event):
-        await logger.log("Broadcasting message to all websocket queues.")
+        logger.info("Broadcasting message to all websocket queues.")
         for queue in self._connected_websockets:
             await queue.put(event.to_json)
         if self._is_filtered_event(event):
-            await logger.log(f"Broadcasting message to {event.event_descriptor} websocket queue.")
+            logger.info(f"Broadcasting message to {event.event_descriptor} websocket queue.")
             for queue in self._connected_websockets_filtered[event.event_descriptor]:
                 await queue.put(event.to_json)
 

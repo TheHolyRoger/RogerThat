@@ -1,7 +1,10 @@
 import asyncio
 from rogerthat.config.config import Config
 from rogerthat.db.models.tradingview_event import tradingview_event
-from rogerthat.utils.logger import logger
+from rogerthat.logging.configure import AsyncioLogger
+
+
+logger = AsyncioLogger.get_logger_main(__name__)
 
 
 class wss_request:
@@ -53,8 +56,8 @@ class wss_request:
                         continue
                     await remote_event.process_event_ws()
             except Exception as e:
-                await logger.log(f"Websocket data received: {data}")
-                await logger.log(f"Websocket receive error: {e}")
+                logger.error(f"Websocket data received: {data}")
+                logger.error(f"Websocket receive error: {e}")
 
     async def process_wss(self, tv_event=None):
         producer = asyncio.create_task(self.sending())

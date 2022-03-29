@@ -1,6 +1,5 @@
 from sqlalchemy.ext.asyncio import create_async_engine
 from rogerthat.config.config import Config
-from rogerthat.utils.logger import logger_cls
 
 
 class db_engine():
@@ -18,9 +17,6 @@ class db_engine():
         self._engine_root = create_async_engine(self._db_url_root,
                                                 echo=Config.debug_mode,
                                                 isolation_level='AUTOCOMMIT')
-        self._logger = logger_cls()
-        self._logger.set_file("db")
-        self._logger.cycle()
 
     @property
     def engine(self):
@@ -29,9 +25,6 @@ class db_engine():
     @property
     def engine_root(self):
         return self._engine_root
-
-    async def log(self, *args, **kwargs):
-        return await self._logger.log(*args, **kwargs)
 
 
 db = db_engine(db_name=Config.database_name,

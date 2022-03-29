@@ -2,7 +2,10 @@ import asyncio
 import time
 import inspect
 import traceback
-from rogerthat.utils.logger import logger
+from rogerthat.logging.configure import AsyncioLogger
+
+
+logger = AsyncioLogger.get_logger_main(__name__)
 
 
 async def safe_wrapper(c):
@@ -12,7 +15,7 @@ async def safe_wrapper(c):
         raise
     except Exception as e:
         tb = traceback.format_exc()
-        await logger.log(f"Unhandled error in background task: {str(e)}\n{tb}")
+        logger.error(f"Unhandled error in background task: {str(e)}\n{tb}")
 
 
 def safe_ensure_future(coro, *args, **kwargs):
@@ -24,7 +27,7 @@ async def safe_gather(*args, **kwargs):
         return await asyncio.gather(*args, **kwargs)
     except Exception as e:
         tb = traceback.format_exc()
-        await logger.log(f"Unhandled error in background task: {str(e)}\n{tb}")
+        logger.error(f"Unhandled error in background task: {str(e)}\n{tb}")
         raise
 
 

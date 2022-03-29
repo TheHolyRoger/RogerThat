@@ -1,5 +1,8 @@
 from rogerthat.config.config import Config
-from rogerthat.utils.logger import logger
+from rogerthat.logging.configure import AsyncioLogger
+
+
+logger = AsyncioLogger.get_logger_main(__name__)
 
 
 class web_request:
@@ -84,28 +87,28 @@ class web_request:
                              for_hbot_api=False,
                              for_tv_api=False,):
         if for_tv_api and not self.check_valid_user_agent():
-            await logger.log("Invalid User Agent detected.")
+            logger.warning("Invalid User Agent detected.")
             await self.log_request_full()
             return False
         if for_tv_api and not self.check_valid_content_type():
-            await logger.log("Invalid Content type detected.")
+            logger.warning("Invalid Content type detected.")
             await self.log_request_full()
             return False
         if not self._request_args_data:
             await self.build_request_args()
         if for_tv_api and not self.check_valid_api_key_tv():
-            await logger.log("Invalid api key detected.")
+            logger.warning("Invalid api key detected.")
             await self.log_request_full()
             return False
         if for_hbot_api and not self.check_valid_api_key_hbot():
-            await logger.log("Invalid api key detected.")
+            logger.warning("Invalid api key detected.")
             return False
         if for_tv_api and not self._json_data:
             await self.build_json_data()
         if not for_tv_api or self.check_valid_json():
             return True
         else:
-            await logger.log("Invalid json detected.")
+            logger.warning("Invalid json detected.")
         return False
 
     async def log_request_full(self):
@@ -126,15 +129,15 @@ class web_request:
         try:
             log_lines.append(f"Data: {await self._quart_request.data}")
         except Exception as e:
-            await logger.log(f"Data Exc: {e}")
+            logger.error(f"Data Exc: {e}")
         try:
             log_lines.append(f"Full Data: {await self._quart_request.get_data()}")
         except Exception as e:
-            await logger.log(f"Full Data Exc: {e}")
+            logger.error(f"Full Data Exc: {e}")
         try:
             log_lines.append(f"JSON: {await self._quart_request.json}")
         except Exception as e:
-            await logger.log(f"JSON Exc: {e}")
+            logger.error(f"JSON Exc: {e}")
         log_lines.append(f"Content Type: {self._content_type}")
         log_lines.append(f"Cookies: {self._cookies}")
         log_lines.append(f"Full Headers {'>' * 10}")
@@ -142,7 +145,7 @@ class web_request:
             log_lines.append(f"    {header[0]}: {header[1]}")
         log_lines.append(line_separation_end)
         log_string = "\n".join(log_lines)
-        await logger.log(f"{line_break}{log_string}{line_break}")
+        logger.debug(f"{line_break}{log_string}{line_break}")
         return True
 
     def __repr__(self):
