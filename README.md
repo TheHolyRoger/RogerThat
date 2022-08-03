@@ -348,10 +348,43 @@ You can connect the **Hummingbot** _Remote Command Executor_ to the **RogerThat*
 ws://localhost:10073/wss
 ```
 
-### Example Config
+### Example Config (NEW)
 
 <details>
-<summary>Example Config ...</summary>
+<summary>Example Config (NEW) ...</summary>
+
+Use something like the following config to connect **RogerThat** to **Hummingbot** via the **Remote Command Executor**.
+
+This config is found inside your main hummingbot folder then `conf\conf_client.yml`
+
+```yaml
+# Remote commands
+remote_command_executor_mode:
+  remote_command_executor_api_key: a9ba4b61-6f6d-41cf-85c3-7cfdfcbea0f3
+  remote_command_executor_ws_url: ws://localhost:10073/wss
+  # Specify a routing name (for use with multiple Hummingbot instances)
+  remote_command_executor_routing_name:
+  # Recommended to keep this on so no events are missed in the case of a network drop out.
+  remote_command_executor_ignore_first_event: true
+  # Whether to disable console command processing for remote command events.
+  # Best to disable this if using in custom scripts or strategies
+  remote_command_executor_disable_console_commands: false
+  # You can specify how to translate received commands to Hummingbot commands here
+  # eg.
+  # remote_commands_translate_commands:
+  #   long: start
+  #   short: stop
+  remote_command_executor_translate_commands:
+    long: start
+    short: stop
+```
+
+</details>
+
+### Example Config (OLD)
+
+<details>
+<summary>Example Config (OLD) ...</summary>
 
 Use something like the following config to connect **RogerThat** to **Hummingbot** via the **Remote Command Executor**.
 
@@ -362,8 +395,8 @@ This config is found inside your main hummingbot folder then `conf\conf_global.y
 remote_commands_enabled: true
 remote_commands_api_key: a9ba4b61-6f6d-41cf-85c3-7cfdfcbea0f3
 remote_commands_ws_url: ws://localhost:10073/wss
-# Specify a routing name for use with multiple Hummingbot instances
-remote_commands_routing_name: hummingbot_instance_1
+# Specify a routing name (for use with multiple Hummingbot instances)
+remote_commands_routing_name:
 # Recommended to keep this on so no events are missed in the case of a network drop out.
 remote_commands_ignore_first_event: true
 # Whether to disable console command processing for remote command events.
