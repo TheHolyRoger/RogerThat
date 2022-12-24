@@ -16,13 +16,12 @@ def formatter_message(message, use_colour=True):
     return message
 
 
-COLOURS = {
-    'WARNING': YELLOW,
-    'INFO': WHITE,
-    'DEBUG': BLUE,
-    'CRITICAL': YELLOW,
-    'ERROR': RED
-}
+COLOURS = {}
+COLOURS[logging.WARNING] = YELLOW
+COLOURS[logging.INFO] = WHITE
+COLOURS[logging.DEBUG] = BLUE
+COLOURS[logging.INFO] = YELLOW
+COLOURS[logging.ERROR] = RED
 
 
 class ColouredFormatter(logging.Formatter):
@@ -33,10 +32,10 @@ class ColouredFormatter(logging.Formatter):
     def format(self, record):
         levelname = record.levelname
         message = record.msg
-        if self.use_colour and levelname in COLOURS:
-            levelname_colour = COLOUR_SEQ % (30 + COLOURS[levelname]) + levelname + RESET_SEQ
+        if self.use_colour and record.levelno in COLOURS:
+            levelname_colour = COLOUR_SEQ % (30 + COLOURS[record.levelno]) + levelname + RESET_SEQ
             record.levelname = levelname_colour
-            if levelname == 'ERROR':
+            if record.levelno == logging.ERROR:
                 record.msg = COLOUR_SEQ % (30 + RED) + message + RESET_SEQ
         formatted_record = logging.Formatter.format(self, record)
         # Reset original level
