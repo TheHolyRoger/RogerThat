@@ -20,9 +20,10 @@ class config_utils:
     # Config file names
     _conf_file_db = "database"
     _conf_file_main = "main_config"
+    _conf_file_mqtt = "gateway_mqtt"
     _conf_file_tv = "tradingview"
     _conf_file_web = "web_server"
-    _conf_file_list = [_conf_file_db, _conf_file_main, _conf_file_tv, _conf_file_web]
+    _conf_file_list = [_conf_file_db, _conf_file_main, _conf_file_mqtt, _conf_file_tv, _conf_file_web]
 
     _auto_gen_str = "# This file is auto-generated, changes will be overwritten by .yml values\n\n"
 
@@ -52,6 +53,12 @@ class config_utils:
         return new_api_key
 
     @classmethod
+    def generate_mqtt_instance_name(cls):
+        config = cls.load_config(cls._conf_file_mqtt)
+        config["mqtt_instance_name"] = str(uuid.uuid4())
+        cls.save_config(config, cls._conf_file_mqtt)
+
+    @classmethod
     def generate_quart_secrets(cls):
         config = cls.load_config(cls._conf_file_web)
         config["quart_secret_key"] = secrets.token_urlsafe(16)
@@ -66,15 +73,6 @@ class config_utils:
         if clear:
             config["api_allowed_keys_tv"] = yml_clear_list(config["api_allowed_keys_tv"])
         config["api_allowed_keys_tv"] = yml_add_to_list(config["api_allowed_keys_tv"], newkey)
-        cls.save_config(config, cls._conf_file_web)
-
-    @classmethod
-    def save_new_api_key_hbot(cls, clear=False):
-        config = cls.load_config(cls._conf_file_web)
-        newkey = cls.generate_api_key(config["api_allowed_keys_hbot"])
-        if clear:
-            config["api_allowed_keys_hbot"] = yml_clear_list(config["api_allowed_keys_hbot"])
-        config["api_allowed_keys_hbot"] = yml_add_to_list(config["api_allowed_keys_hbot"], newkey)
         cls.save_config(config, cls._conf_file_web)
 
     @classmethod
@@ -127,12 +125,6 @@ class config_utils:
         cls.generate_env_nginx()
 
     @classmethod
-    def toggle_websocket_auth(cls, disable):
-        config = cls.load_config(cls._conf_file_web)
-        config["disable_websocket_authentication"] = bool(disable)
-        cls.save_config(config, cls._conf_file_web)
-
-    @classmethod
     def generate_env_postgres(cls, safe=False):
         pg_env_path = os.path.join(cls._config_dir, "env_postgres.env")
         if os.path.exists(pg_env_path) and safe:
@@ -176,10 +168,12 @@ class config_utils:
                         continue
                     os.remove(new_conf)
                 shutil.copy(templ_conf, new_conf)
+                if "gateway_mqtt" in new_conf:
+                    cls.generate_mqtt_instance_name()
         if not safe or not configs_exist:
             cls.save_new_api_key_tv(clear=True)
-            cls.save_new_api_key_hbot(clear=True)
             cls.generate_quart_secrets()
+            cls.generate_mqtt_instance_name()
         cls.generate_env_postgres()
         cls.generate_env_nginx()
 
@@ -210,6 +204,10 @@ class config_utils:
     @classmethod
     def load_config_db(cls):
         return cls.load_config(cls._conf_file_db)
+
+    @classmethod
+    def load_config_mqtt(cls):
+        return cls.load_config(cls._conf_file_mqtt)
 
     @classmethod
     def load_config_tv(cls):

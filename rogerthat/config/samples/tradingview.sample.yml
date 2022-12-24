@@ -1,11 +1,10 @@
 #########################################
 ###        TradingView config         ###
 #########################################
-template_version: 0.1
+template_version: 0.2
 
 # A list of key names to use for the event descriptor on received events.
 # Only one will be used.
-# Defaults to `event_descriptor` if none set.
 # Event data must contain a descriptor key to be accepted.
-tradingview_descriptor_fields:
-- name
+tradingview_translations:
+  name: translated_name

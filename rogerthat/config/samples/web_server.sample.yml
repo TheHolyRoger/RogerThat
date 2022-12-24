@@ -1,7 +1,7 @@
 #########################################
 ###         Web Server config         ###
 #########################################
-template_version: 0.2
+template_version: 0.3
 
 # Server HOSTNAME to listen on publicly
 # (Just the HOSTNAME, not the full URL)
@@ -9,20 +9,10 @@ server_host: localhost
 
 # Webroot for REST URLs
 web_root: api
-# Webroot for Websocket URLs
-wss_root: wss
-
-# Allowed API keys for the Hummingbot REST route and Websocket route
-api_allowed_keys_hbot:
-- apikey1
 
 # Allowed API keys for the TradingView route
 api_allowed_keys_tv:
 - apikey1
-
-# Whether to disable authentication on the Websocket route.
-# (Only recommended for testing.)
-disable_websocket_authentication: false
 
 # Accepted user agents on the TradingView router
 accepted_user_agents_tv:

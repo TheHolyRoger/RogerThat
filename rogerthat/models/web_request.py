@@ -74,17 +74,10 @@ class web_request:
                 "api_key" in self._request_args_keys and
                 self._request_args_data["api_key"] in Config.api_allowed_keys_tv)
 
-    def check_valid_api_key_hbot(self):
-        return (self._request_args_keys and
-                "api_key" in self._request_args_keys and
-                self._request_args_data["api_key"] in Config.api_allowed_keys_hbot)
-
     def check_valid_json(self):
-        return (self._json_data and
-                any(k in Config.tradingview_descriptor_fields for k in list(self._json_data.keys())))
+        return (self._json_data and 'topic' in list(self._json_data.keys()))
 
     async def check_is_valid(self,
-                             for_hbot_api=False,
                              for_tv_api=False,):
         if for_tv_api and not self.check_valid_user_agent():
             logger.warning("Invalid User Agent detected.")
@@ -99,9 +92,6 @@ class web_request:
         if for_tv_api and not self.check_valid_api_key_tv():
             logger.warning("Invalid api key detected.")
             await self.log_request_full()
-            return False
-        if for_hbot_api and not self.check_valid_api_key_hbot():
-            logger.warning("Invalid api key detected.")
             return False
         if for_tv_api and not self._json_data:
             await self.build_json_data()
