@@ -18,7 +18,11 @@ class RogerThat:
 
     async def Initialise(self):
         logger.info("Initialising database.")
-        await database_init.initialise()
+        db_started = await database_init.initialise()
+        if not db_started:
+            await asyncio.sleep(0.1)
+            self.shutdown_event.set()
+            return
         logger.info("Finished initialising database.")
         logger.info(splash_msg)
 

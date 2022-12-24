@@ -1,5 +1,6 @@
 import asyncio  # noqa: F401
 import os
+from socket import gaierror
 from sqlalchemy import text
 # Alembic
 from alembic.config import Config as alembic_config
@@ -47,8 +48,12 @@ class database_init():
             await cls.create_tables()
         except Exception:
             logger.error("Failed to create tables.")
-            await cls.create_db()
-            await cls.create_tables()
+            try:
+                await cls.create_db()
+                await cls.create_tables()
+            except gaierror:
+                logger.error("Failed to connect to SQL database.")
+                return None
 
         logger.info("Checking alembic.")
         try:

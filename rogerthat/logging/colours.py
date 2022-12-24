@@ -36,7 +36,7 @@ class ColouredFormatter(logging.Formatter):
             levelname_colour = COLOUR_SEQ % (30 + COLOURS[record.levelno]) + levelname + RESET_SEQ
             record.levelname = levelname_colour
             if record.levelno == logging.ERROR:
-                record.msg = COLOUR_SEQ % (30 + RED) + message + RESET_SEQ
+                record.msg = COLOUR_SEQ % (30 + RED) + str(message) + RESET_SEQ
         formatted_record = logging.Formatter.format(self, record)
         # Reset original level
         record.levelname = levelname
