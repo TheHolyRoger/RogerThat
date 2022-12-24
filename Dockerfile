@@ -16,11 +16,11 @@ USER rogerthat:rogerthat
 WORKDIR /home/rogerthat
 
 # Install miniconda
-RUN curl https://repo.anaconda.com/miniconda/Miniconda3-py39_4.11.0-Linux-x86_64.sh -o ~/miniconda.sh && \
+RUN curl https://repo.anaconda.com/miniconda/Miniconda3-py310_22.11.1-1-Linux-x86_64.sh -o ~/miniconda.sh && \
     /bin/bash ~/miniconda.sh -b && \
     rm ~/miniconda.sh && \
     ~/miniconda3/bin/conda update -n base conda -y && \
-    ~/miniconda3/bin/conda clean -tipsy
+    ~/miniconda3/bin/conda clean -tipy
 
 # Dropping default ~/.bashrc because it will return if not running as interactive shell, thus not invoking PATH settings
 RUN :> ~/.bashrc
@@ -30,7 +30,7 @@ COPY --chown=rogerthat:rogerthat support/environment.yml .
 
 # ./install | create rogerthat environment
 RUN ~/miniconda3/bin/conda env create -f environment.yml && \
-    ~/miniconda3/bin/conda clean -tipsy && \
+    ~/miniconda3/bin/conda clean -tipy && \
     # clear pip cache
     rm -rf /home/rogerthat/.cache
 
