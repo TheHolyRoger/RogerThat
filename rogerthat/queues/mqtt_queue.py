@@ -1,4 +1,5 @@
 import asyncio
+from socket import gaierror
 from ssl import SSLCertVerificationError, SSLEOFError
 from rogerthat.config.config import Config
 from rogerthat.logging.configure import AsyncioLogger
@@ -22,7 +23,7 @@ class mqtt_queue_cls:
                 self._mqtt
                 self._mqtt.run()
                 self.start()
-            except ConnectionRefusedError:
+            except (ConnectionRefusedError, gaierror):
                 logger.error(f"{self._failure_msg} Check host and port!")
             except SSLEOFError:
                 logger.error(f"{self._failure_msg} Using plain HTTP port with SSL enabled!")
@@ -48,11 +49,12 @@ class mqtt_queue_cls:
             raise Exception("listen_for_broadcasts called but mqtt is not enabled!")
         while True:
             msg = await self._mqtt_queue.get()
-            print("Got msg")
             publisher = self._mqtt.get_publisher_for(msg.topic)
             publisher.broadcast(msg.to_pydantic)
 
     def broadcast(self, event):
+        if not self._mqtt_queue:
+            logger.error("Cannot broadcast, MQTT not started!")
         if self._mqtt:
             logger.info("Broadcasting message to mqtt queue.")
             self._mqtt_queue.put_nowait(event)
