@@ -1,7 +1,27 @@
 repos:
+-   repo: local
+    hooks:
+    -   id: git-vars
+        name: Parse git vars
+        language: system
+        entry: python .githooks/replace_by_git_vars.py docs/README.template.md README.md -v
+        files: docs/README.template.md
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
     - id: flake8
       types: ['file']
       files: \.(py|pyx|pxd)$
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.10.0
+    hooks:
+    -   id: eslint
+        files: \.[jt]sx?$  # *.js, *.jsx, *.ts and *.tsx
+        types: [file]
+-   repo: https://github.com/pycqa/isort
+    rev: 5.10.1
+    hooks:
+      - id: isort
+        files: "\\.(py)$"
+        args: [--settings-path=pyproject.toml]
+

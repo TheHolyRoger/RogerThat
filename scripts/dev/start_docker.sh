@@ -49,7 +49,7 @@ if [ "${dockerprune} " == "1 " ]; then
     echo "Pruning docker."
     docker system prune -f
     docker rmi theholiestroger/nginx-iptables:latest || true
-    docker rmi theholiestroger/rogerthat:latest || true
+    docker rmi "theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-latest}" || true
 fi
 
 if [ "${dontbuild} " == "1 " ]; then

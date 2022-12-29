@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if (( $EUID == 0 )) || (( $(id -u) == 0 )); then
+    echo "Don't run RogerThat as sudo or root, it will cause permission errors. Exiting."
+    exit
+fi
+
 cd $(dirname $0)/..
 
 SCRIPT=`basename ${BASH_SOURCE[0]}`

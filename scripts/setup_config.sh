@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if (( $EUID == 0 )) || (( $(id -u) == 0 )); then
+    echo "Don't run RogerThat as sudo or root, it will cause permission errors. Exiting."
+    exit
+fi
+
 cd $(dirname $0)/..
 
 export PUID=$(id -u)
@@ -13,6 +18,6 @@ chown -R $PUID:$PGID ./data
 
 docker run -it --rm \
 --volume "$(pwd)/configs:/configs" \
-theholiestroger/rogerthat:latest \
+"theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-latest}" \
 ./docker_start_setup_script.sh \
 "$@"
