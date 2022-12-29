@@ -1,8 +1,8 @@
 # Private config vars
 import os
-from rogerthat.utils.class_helpers import no_setters
-from rogerthat.config.loader import config_loader
 
+from rogerthat.config.loader import config_loader
+from rogerthat.utils.class_helpers import no_setters
 
 _loaded_configs = config_loader()
 _app_config = _loaded_configs.app_config
@@ -12,12 +12,11 @@ _tv_config = _loaded_configs.tv_config
 _web_config = _loaded_configs.web_config
 
 
-class ConfigSetup(no_setters):
+class Config(no_setters):
     # Main App
     _project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
     _app_name = _app_config['app_name']
     _debug_mode = _app_config['debug_mode']
-    _include_extra_order_fields = _app_config.get('include_extra_order_fields', False)
 
     # Web
     _server_host = _web_config['server_host']
@@ -51,7 +50,5 @@ class ConfigSetup(no_setters):
     _api_allowed_keys_tv = _web_config['api_allowed_keys_tv']
 
     # Trading View
-    _tradingview_translations = _tv_config['tradingview_translations']
-
-
-Config = ConfigSetup()
+    _tradingview_include_extra_fields = _tv_config.get('tradingview_include_extra_fields')
+    _tradingview_exclude_fields = _tv_config.get('tradingview_exclude_fields')

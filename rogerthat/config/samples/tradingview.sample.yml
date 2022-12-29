@@ -1,10 +1,12 @@
 #########################################
 ###        TradingView config         ###
 #########################################
-template_version: 0.2
+template_version: 0.3
 
-# A list of key names to use for the event descriptor on received events.
-# Only one will be used.
-# Event data must contain a descriptor key to be accepted.
-tradingview_translations:
-  name: translated_name
+# A list of fields or key names to be included in event broadcasts
+tradingview_include_extra_fields:
+  - extra_data
+
+# A list of fields or key names to be excluded from event broadcasts
+tradingview_exclude_fields:
+  - exclude_this_key

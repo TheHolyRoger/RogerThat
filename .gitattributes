@@ -4,4 +4,4 @@ rogerthat/* eol=lf
 scripts/* eol=lf
 scripts/*.bat eol=crlf
 support/* eol=lf
-tests/* eol=lf
+examples/* eol=lf

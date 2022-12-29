@@ -1,36 +1,69 @@
-from decimal import Decimal as Dec
 import time
-from pydantic import create_model
-from commlib.msg import PubSubMessage
-from sqlalchemy import (
-    Column,
-    BigInteger,
-    Numeric,
-    String,
-)
-from rogerthat.config.config import Config
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from rogerthat.db.engine import db
-from rogerthat.db.models.base import (
-    base_model,
-    db_model_base,
-)
-from rogerthat.queues.mqtt_queue import mqtt_queue
-# from rogerthat.queues.ws_queue import ws_queue
-from rogerthat.utils.parsing_numbers import (
-    decimal_or_none,
-    decimal_or_zero,
-    int_or_none,
-)
-from rogerthat.logging.configure import AsyncioLogger
 
+from pydantic import create_model
+from sqlalchemy import BigInteger, Boolean, Column, Integer, Numeric, String
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.future import select
+
+from rogerthat.config.config import Config
+from rogerthat.db.engine import db_engine
+from rogerthat.db.models.base import base_model, db_model_base
+from rogerthat.logging.configure import AsyncioLogger
+from rogerthat.mqtt.messages import TradingviewMessage
+from rogerthat.queues.mqtt_queue import mqtt_queue
+from rogerthat.utils.parsing_numbers import bool_or_none, decimal_or_none, int_or_none
 
 logger = AsyncioLogger.get_logger_main(__name__)
 
 
-class pydantic_tradingview_event(PubSubMessage):
-    pass
+EVENT_KEYS = [
+    "topic",
+    "timestamp_received",
+    "timestamp_event",
+    "sequence",
+    "event_type",
+    "params",
+    "data",
+    "msg",
+    "exchange",
+    "asset",
+    "amount",
+    "log_level",
+    "restore",
+    "script",
+    "is_quickstart",
+    "skip_order_cancellation",
+    "strategy",
+    "days",
+    "verbose",
+    "precision",
+]
+
+
+class filtered_event_keys:
+    _filtered = None
+    _key_translations = {
+        "event_type": "type",
+    }
+
+    @classmethod
+    def translate(cls, evt_key):
+        return cls._key_translations.get(evt_key, evt_key)
+
+    @classmethod
+    def list(cls):
+        if cls._filtered is None:
+            if Config.get_inst().tradingview_include_extra_fields:
+                cls._filtered = list(dict.fromkeys((EVENT_KEYS + Config.get_inst().tradingview_include_extra_fields)))
+            else:
+                cls._filtered = list(EVENT_KEYS)
+            if Config.get_inst().tradingview_exclude_fields:
+                for excl_key in Config.get_inst().tradingview_exclude_fields:
+                    if excl_key != "topic" and excl_key in cls._filtered:
+                        cls._filtered.remove(excl_key)
+        return cls._filtered
 
 
 class tradingview_event(db_model_base,
@@ -38,149 +71,116 @@ class tradingview_event(db_model_base,
     __name__ = 'tradingview_event'
     __tablename__ = 'tradingview_events'
     id = Column(BigInteger, primary_key=True, index=True, unique=True, autoincrement=True)
+    topic = Column(String(220), index=True)
     timestamp_received = Column(BigInteger, index=True)
     timestamp_event = Column(BigInteger, index=True)
-    topic = Column(String(220), index=True)
-    command = Column(String(100), index=True)
+    sequence = Column(BigInteger, index=True)
+    event_type = Column(String(90), index=True)
+    params = Column(MutableDict.as_mutable(JSONB))
+    data = Column(MutableDict.as_mutable(JSONB))
+    msg = Column(String(500))
     exchange = Column(String(90), index=True)
-    symbol = Column(String(30), index=True)
     asset = Column(String(30), index=True)
-    interval = Column(BigInteger, index=True)
-    price = Column(Numeric, index=True)
-    volume = Column(Numeric, index=True)
     amount = Column(Numeric, index=True)
-    inventory = Column(Numeric, index=True)
-    order_bid_spread = Column(Numeric, index=True)
-    order_ask_spread = Column(Numeric, index=True)
-    order_amount = Column(Numeric, index=True)
-    order_levels = Column(Numeric, index=True)
-    order_level_spread = Column(Numeric, index=True)
+    log_level = Column(String(30))
+    restore = Column(Boolean)
+    script = Column(String(90))
+    is_quickstart = Column(Boolean)
+    skip_order_cancellation = Column(Boolean)
+    strategy = Column(String(90), index=True)
+    days = Column(Numeric)
+    verbose = Column(Boolean)
+    precision = Column(Integer)
 
     def __init__(self,
                  from_json=None,
-                 timestamp=None,
                  topic=None,
-                 command=None,
+                 timestamp=None,
+                 sequence=None,
+                 event_type=None,
+                 params=None,
+                 data=None,
+                 msg=None,
                  exchange=None,
-                 symbol=None,
                  asset=None,
-                 interval=None,
-                 price=Dec("0"),
-                 volume=Dec("0"),
-                 amount=Dec("0"),
-                 inventory=Dec("0"),
-                 order_bid_spread=None,
-                 order_ask_spread=None,
-                 order_amount=None,
-                 order_levels=None,
-                 order_level_spread=None,
+                 amount=None,
+                 log_level=None,
+                 restore=None,
+                 script=None,
+                 is_quickstart=None,
+                 skip_order_cancellation=None,
+                 strategy=None,
+                 days=None,
+                 verbose=None,
+                 precision=None,
                  ):
+        self.topic = topic
         self.timestamp_received = int(time.time() * 1000)
         self.timestamp_event = timestamp
-        self.topic = topic
-        self.command = command
+        self.sequence = sequence
+        self.event_type = event_type
+        self.params = params
+        self.data = data
+        self.msg = msg
         self.exchange = exchange
-        self.symbol = symbol
         self.asset = asset
-        self.interval = interval
-        self.price = price
-        self.volume = volume
         self.amount = amount
-        self.inventory = inventory
-        self.order_bid_spread = order_bid_spread
-        self.order_ask_spread = order_ask_spread
-        self.order_amount = order_amount
-        self.order_levels = order_levels
-        self.order_level_spread = order_level_spread
-        self.log_level = None
-        self.restore = None
-        self.script = None
-        self.is_quickstart = None
-        self.skip_order_cancellation = None
-        self.params = None
-        self.strategy = None
-        self.days = None
-        self.verbose = None
-        self.precision = None
+        self.log_level = log_level
+        self.restore = restore
+        self.script = script
+        self.is_quickstart = is_quickstart
+        self.skip_order_cancellation = skip_order_cancellation
+        self.strategy = strategy
+        self.days = days
+        self.verbose = verbose
+        self.precision = precision
+        if Config.get_inst().tradingview_include_extra_fields:
+            for evt_key in Config.get_inst().tradingview_include_extra_fields:
+                setattr(self, evt_key, None)
         if from_json:
-            self.timestamp_event = int_or_none(from_json.get("timestamp"))
-            self.command = from_json.get("command")
-            self.exchange = from_json.get("exchange")
-            self.symbol = from_json.get("symbol")
-            self.asset = from_json.get("asset")
-            self.interval = int_or_none(from_json.get("interval"))
-            self.price = decimal_or_zero(from_json.get("price"))
-            self.volume = decimal_or_zero(from_json.get("volume"))
-            self.amount = decimal_or_zero(from_json.get("amount"))
-            self.inventory = decimal_or_zero(from_json.get("inventory"))
-            self.order_bid_spread = decimal_or_none(from_json.get("order_bid_spread"))
-            self.order_ask_spread = decimal_or_none(from_json.get("order_ask_spread"))
-            self.order_amount = decimal_or_none(from_json.get("order_amount"))
-            self.order_levels = decimal_or_none(from_json.get("order_levels"))
-            self.order_level_spread = decimal_or_none(from_json.get("order_level_spread"))
             self.topic = from_json.get("topic")
-            self.log_level = from_json.get("log_level")
-            self.restore = from_json.get("restore")
-            self.script = from_json.get("script")
-            self.is_quickstart = from_json.get("is_quickstart")
-            self.skip_order_cancellation = from_json.get("skip_order_cancellation")
+            self.timestamp_event = int_or_none(from_json.get("timestamp"))
+            self.sequence = int_or_none(from_json.get("sequence"))
+            self.event_type = from_json.get("type")
             self.params = from_json.get("params")
+            self.data = from_json.get("data")
+            self.msg = from_json.get("msg")
+            self.exchange = from_json.get("exchange")
+            self.asset = from_json.get("asset")
+            self.amount = decimal_or_none(from_json.get("amount"))
+            self.log_level = from_json.get("log_level")
+            self.restore = bool_or_none(from_json.get("restore"))
+            self.script = from_json.get("script")
+            self.is_quickstart = bool_or_none(from_json.get("is_quickstart"))
+            self.skip_order_cancellation = bool_or_none(from_json.get("skip_order_cancellation"))
             self.strategy = from_json.get("strategy")
-            self.days = from_json.get("days")
-            self.verbose = from_json.get("verbose")
-            self.precision = from_json.get("precision")
+            self.days = decimal_or_none(from_json.get("days"))
+            self.verbose = bool_or_none(from_json.get("verbose"))
+            self.precision = int_or_none(from_json.get("precision"))
+            if Config.get_inst().tradingview_include_extra_fields:
+                for evt_key in Config.get_inst().tradingview_include_extra_fields:
+                    setattr(self, evt_key, from_json.get(evt_key))
 
     async def process_event(self):
-        logger.info(f"Received event from TradingView: {self.to_minimised_dict()}")
+        logger.debug(f"Processing event from TradingView: {self.to_minimised_dict()}")
         await self.db_save()
-        mqtt_queue.broadcast(self)
+        mqtt_queue.get_instance().broadcast(self)
 
     @property
     def to_pydantic(self):
-        pydantic_model = create_model("pydantic_tradingview_event",
+        pydantic_model = create_model("TradingviewMessage",
                                       **self.to_minimised_dict(mqtt=True),
-                                      __base__=pydantic_tradingview_event)
+                                      __base__=TradingviewMessage)
         return pydantic_model()
 
     def to_minimised_dict(self, mqtt=False):
-        obj_keys = [
-            "timestamp_received",
-            "timestamp_event",
-            "command",
-            "exchange",
-            "symbol",
-            "asset",
-            "interval",
-            "price",
-            "volume",
-            "amount",
-            "inventory",
-            "log_level",
-            "restore",
-            "script",
-            "is_quickstart",
-            "skip_order_cancellation",
-            "params",
-            "strategy",
-            "days",
-            "verbose",
-            "precision",
-        ]
-        if not mqtt:
-            obj_keys.insert(0, "topic")
-        if Config.include_extra_order_fields:
-            obj_keys.extend([
-                "order_bid_spread",
-                "order_ask_spread",
-                "order_amount",
-                "order_levels",
-                "order_level_spread",
-            ])
         minimised_dict = {}
-        for key in obj_keys:
+        for i, key in enumerate(filtered_event_keys.list()):
+            if i == 0 and mqtt:
+                continue
             val = getattr(self, key)
-            if val:
-                minimised_dict[key] = val
+            if val is not None:
+                minimised_dict[filtered_event_keys.translate(key)] = val
 
         return minimised_dict
 
@@ -188,7 +188,7 @@ class tradingview_event(db_model_base,
     async def fetch_latest(cls,
                            topic=None):
         result = None
-        async with AsyncSession(db.engine,
+        async with AsyncSession(db_engine.db().engine,
                                 expire_on_commit=False) as session:
             async with session.begin():
                 stmt = (select(cls)

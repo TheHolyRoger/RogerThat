@@ -1,7 +1,6 @@
 from rogerthat.config.config import Config
 from rogerthat.logging.configure import AsyncioLogger
 
-
 logger = AsyncioLogger.get_logger_main(__name__)
 
 
@@ -63,7 +62,7 @@ class web_request:
         return True
 
     def check_valid_user_agent(self):
-        return self._user_agent and self._user_agent in Config.accepted_user_agents_tv
+        return self._user_agent and self._user_agent in Config.get_inst().accepted_user_agents_tv
 
     def check_valid_content_type(self):
         return self._content_type and (self._content_type.startswith('application/json') or
@@ -72,10 +71,14 @@ class web_request:
     def check_valid_api_key_tv(self):
         return (self._request_args_keys and
                 "api_key" in self._request_args_keys and
-                self._request_args_data["api_key"] in Config.api_allowed_keys_tv)
+                self._request_args_data["api_key"] in Config.get_inst().api_allowed_keys_tv)
 
     def check_valid_json(self):
-        return (self._json_data and 'topic' in list(self._json_data.keys()))
+        if not self._json_data:
+            return False
+        if isinstance(self._json_data, list):
+            return all(['topic' in list(jdata.keys()) for jdata in self._json_data])
+        return 'topic' in list(self._json_data.keys())
 
     async def check_is_valid(self,
                              for_tv_api=False,):

@@ -4,9 +4,9 @@ import logging.handlers
 from os.path import join as path_join
 from queue import SimpleQueue as Queue
 from typing import List
+
 from rogerthat.config.config import Config
 from rogerthat.logging.colours import ColouredFormatter
-
 
 LOGGING_FILE_LIMIT = 1e6
 LOG_LEVEL_ROOT = logging.DEBUG
@@ -66,7 +66,7 @@ class AsyncioLogger():
         if log_file in cls._file_handlers:
             return
         file_formatter = logging.Formatter('[%(asctime)s] %(name)s - %(levelname)s - %(message)s')
-        log_path = path_join(Config.project_root, "logs", f"{Config.app_name}-{log_file}.log")
+        log_path = path_join(Config.get_inst().project_root, "logs", f"{Config.get_inst().app_name}-{log_file}.log")
         file_handler = AsyncLoggingRotatingFileHandler(
             log_path,
             "a",

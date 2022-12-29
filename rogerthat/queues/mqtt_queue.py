@@ -1,29 +1,36 @@
 import asyncio
 from socket import gaierror
 from ssl import SSLCertVerificationError, SSLEOFError
+
 from rogerthat.config.config import Config
 from rogerthat.logging.configure import AsyncioLogger
 from rogerthat.mqtt.mqtt import MQTTGateway
 from rogerthat.utils.asyncio_tasks import safe_ensure_future
 
-
 logger = AsyncioLogger.get_logger_main(__name__)
 
 
-class mqtt_queue_cls:
+class mqtt_queue:
+    _shared_instance: "mqtt_queue" = None
+
+    @classmethod
+    def get_instance(cls) -> "mqtt_queue":
+        if cls._shared_instance is None:
+            cls._shared_instance = cls()
+        return cls._shared_instance
+
     def __init__(self):
         self._mqtt_queue_task = None
         self._mqtt_queue = None
         self._mqtt: MQTTGateway = None
         self._failure_msg = "Failed to connect to MQTT Broker!"
 
-        if Config.mqtt_enable:
+        if Config.get_inst().mqtt_enable:
             try:
                 self._mqtt = MQTTGateway()
-                self._mqtt
                 self._mqtt.run()
                 self.start()
-            except (ConnectionRefusedError, gaierror):
+            except (ConnectionRefusedError, gaierror, OSError):
                 logger.error(f"{self._failure_msg} Check host and port!")
             except SSLEOFError:
                 logger.error(f"{self._failure_msg} Using plain HTTP port with SSL enabled!")
@@ -56,8 +63,5 @@ class mqtt_queue_cls:
         if not self._mqtt_queue:
             logger.error("Cannot broadcast, MQTT not started!")
         if self._mqtt:
-            logger.info("Broadcasting message to mqtt queue.")
+            logger.debug("Adding event to MQTT queue.")
             self._mqtt_queue.put_nowait(event)
-
-
-mqtt_queue = mqtt_queue_cls()

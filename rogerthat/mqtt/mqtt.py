@@ -4,11 +4,10 @@ from typing import TYPE_CHECKING
 
 from commlib.node import Node
 from commlib.transports.mqtt import ConnectionParameters as MQTTConnectionParameters
+
 from rogerthat.config.config import Config
 from rogerthat.logging.configure import AsyncioLogger
-from rogerthat.mqtt.messages import (
-    EventMessage,
-)
+from rogerthat.mqtt.messages import TradingviewMessage
 
 if TYPE_CHECKING:
     from rogerthat.db.models.tradingview_event import tradingview_event
@@ -28,29 +27,34 @@ class MQTTPublisher:
         self._topic = topic
 
         self.publisher = self._node.create_publisher(
-            topic=self._topic, msg_type=EventMessage
+            topic=self._topic, msg_type=TradingviewMessage
         )
 
     def broadcast(self, event: "tradingview_event"):
+        logger.debug(f"Broadcasting MQTT event on {self._topic}: {event}")
         self.publisher.publish(event)
 
 
 class MQTTGateway(Node):
-    NODE_NAME = 'rogerthat.$UID'
-    HEARTBEAT_URI = 'rogerthat/$UID/hb'
+    NODE_NAME = "$APP.$UID"
+    HEARTBEAT_URI = "$APP/$UID/hb"
 
     def __init__(self,
                  *args, **kwargs):
         self.mqtt_publisher = None
 
-        self.HEARTBEAT_URI = self.HEARTBEAT_URI.replace('$UID', Config.mqtt_instance_name)
+        self.HEARTBEAT_URI = self.HEARTBEAT_URI.replace('$UID', Config.get_inst().mqtt_instance_name)
+        self.HEARTBEAT_URI = self.HEARTBEAT_URI.replace('$APP', Config.get_inst().app_name)
+
+        self.NODE_NAME = self.NODE_NAME.replace('$UID', Config.get_inst().mqtt_instance_name)
+        self.NODE_NAME = self.NODE_NAME.replace('$APP', Config.get_inst().app_name)
 
         self._params = self._create_mqtt_params_from_conf()
 
         self._topic_publishers = {}
 
         super().__init__(
-            node_name=self.NODE_NAME.replace('$UID', Config.mqtt_instance_name),
+            node_name=self.NODE_NAME,
             connection_params=self._params,
             heartbeat_uri=self.HEARTBEAT_URI,
             debug=True,
@@ -66,9 +70,9 @@ class MQTTGateway(Node):
 
     def _create_mqtt_params_from_conf(self):
         return MQTTConnectionParameters(
-            host=Config.mqtt_host,
-            port=int(Config.mqtt_port),
-            username=Config.mqtt_username,
-            password=Config.mqtt_password,
-            ssl=Config.mqtt_ssl
+            host=Config.get_inst().mqtt_host,
+            port=int(Config.get_inst().mqtt_port),
+            username=Config.get_inst().mqtt_username,
+            password=Config.get_inst().mqtt_password,
+            ssl=Config.get_inst().mqtt_ssl
         )

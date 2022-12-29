@@ -7,9 +7,5 @@ template_version: 0.2
 app_name: rogerthat
 
 # ADVANCED!
-# Setting this option to `true` will include extra order fields in sent data.
-# These fields won't do anything without your intervention, they require scripting of Hummingbot.
-include_extra_order_fields: false
-
 # Enabled debug mode
 debug_mode: false
