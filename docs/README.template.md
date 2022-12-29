@@ -1,15 +1,15 @@
 # ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Important!! RogerThat has been rewritten for MQTT!
-## This is an outdated version and no longer supported! See the `mqtt` branch for the latest version.
+## Setup has completely changed to support MQTT with Hummingbot's new MQTT Bridge
 
 # RogerThat
 
 **RogerThat** is a standalone python web server designed to receive **TradingView** alerts (or similar) and forward them to **Hummingbot**.
 
-**TradingView** is a widely used market market tracker that allows users to create, share and use custom strategies but is quite limited in how it can be "plugged in" to other services. It does however allow the creation of "**Alerts**" which can send data to a webhook (public URL).
+**TradingView** is a widely used market market tracker that allows users to create, share and use custom strategies but is quite limited in how it can be "plugged in" or connected to other services. It does however allow the creation of "**Alerts**" which can send data to a Webhook (requires a public-facing URL).
 
-**RogerThat** facilitates the collection and forwarding of these **TradingView Alerts** to **Hummingbot** via the **Remote Command Executor** module, which listens to **RogerThat** via a websocket for received commands and updates.
+**RogerThat** facilitates the collection and forwarding of these **TradingView Alerts** to **Hummingbot** via the **MQTT Bridge** module, which listens to **RogerThat** via subscribed MQTT topics.
 
-Whilst it's purpose is to bridge **TradingView** and **Hummingbot**, it can work as a gateway / bridge between any service that sends data via Webhooks (to a public URL) and serve / route them to *multiple* **Hummingbot** instances.
+Whilst RogerThat's purpose is to bridge **TradingView** and **Hummingbot**, it can work as a gateway / bridge between any service that sends data via Webhooks (to a public URL) and serve / route them to *multiple* **Hummingbot** instances or connected MQTT clients.
 
 ##### Menu
 
@@ -303,12 +303,9 @@ Where `<public-ip-or-domain-name>` is your domain name or public IP address and 
 
 ### JSON Data for TradingView alerts.
 
-Alerts must be formatted as JSON, the only required parameter is `name`.
-*(this parameter key name is configurable in `configs/tradingview.yml`)*
+Alerts must be formatted as JSON, the only required parameter is `topic`.
 
-The `name` key or one of the `tradingview_descriptor_fields` must be present in the JSON data to be accepted, but the value can be null or empty. This is transmitted to **Hummingbot** as `event_descriptor`
-
-Using an empty value for `name` ignores **Hummingbot**'s *Remote Command Executor* routing names.
+The `topic` key must be present in the JSON data to be accepted.
 
 <details>
 <summary>Example alert data:</summary>
@@ -317,8 +314,8 @@ Simple Start command
 
 ```json
 {
-    "name": "hummingbot_instance_1",
-    "command": "start",
+    "topic": "hbot/hummingbot_instance_1/start",
+    "log_level": "DEBUG"
 }
 ```
 
@@ -326,24 +323,28 @@ Simple Stop command
 
 ```json
 {
-    "name": "hummingbot_instance_1",
-    "command": "stop",
+    "topic": "hbot/hummingbot_instance_1/stop",
+    "skip_order_cancellation": false
 }
 ```
 
-Alert with all fields using Pine variables
+Advanced alert with all fields using Pine variables
 
 ```json
 {
-    "name": "hummingbot_instance_1",
+    "topic": "hbot/hummingbot_instance_1/external/events/my_event",
+    "type": "external_event",
     "timestamp": "{{timenow}}",
-    "exchange": "{{exchange}}",
-    "symbol": "{{ticker}}",
-    "interval": "{{interval}}",
-    "price": "{{close}}",
-    "volume": "{{volume}}",
-    "command": "{{strategy.market_position}}",
-    "inventory": "{{strategy.order.comment}}"
+    "sequence": "{{timenow}}",
+    "data": {
+        "exchange": "{{exchange}}",
+        "symbol": "{{ticker}}",
+        "interval": "{{interval}}",
+        "price": "{{close}}",
+        "volume": "{{volume}}",
+        "position": "{{strategy.market_position}}",
+        "inventory": "{{strategy.order.comment}}"
+    }
 }
 ```
 
@@ -353,94 +354,31 @@ ___
 
 ## Hummingbot Connection
 
-You can connect the **Hummingbot** _Remote Command Executor_ to the **RogerThat** websocket with this URL:
-```html
-ws://localhost:10073/wss
-```
+Connect the **Hummingbot** _MQTT Bridge_ and **RogerThat** to the same MQTT Broker.
 
-### Example Config (NEW)
+### Example Config
 
 <details>
-<summary>Example Config (NEW) ...</summary>
+<summary>Example Config ...</summary>
 
-Use something like the following config to connect **RogerThat** to **Hummingbot** via the **Remote Command Executor**.
+Use something like the following config to connect **RogerThat** to **Hummingbot** via the **MQTT Bridge**.
 
 This config is found inside your main hummingbot folder then `conf\conf_client.yml`
 
 ```yaml
 # Remote commands
-remote_command_executor_mode:
-  remote_command_executor_api_key: a9ba4b61-6f6d-41cf-85c3-7cfdfcbea0f3
-  remote_command_executor_ws_url: ws://localhost:10073/wss
-  # Specify a routing name (for use with multiple Hummingbot instances)
-  remote_command_executor_routing_name:
-  # Recommended to keep this on so no events are missed in the case of a network drop out.
-  remote_command_executor_ignore_first_event: true
-  # Whether to disable console command processing for remote command events.
-  # Best to disable this if using in custom scripts or strategies
-  remote_command_executor_disable_console_commands: false
-  # You can specify how to translate received commands to Hummingbot commands here
-  # eg.
-  # remote_commands_translate_commands:
-  #   long: start
-  #   short: stop
-  remote_command_executor_translate_commands:
-    long: start
-    short: stop
+mqtt_bridge:
+  mqtt_host: localhost
+  mqtt_port: 1883
+  mqtt_autostart: true
 ```
-
-</details>
-
-### Example Config (OLD)
-
-<details>
-<summary>Example Config (OLD) ...</summary>
-
-Use something like the following config to connect **RogerThat** to **Hummingbot** via the **Remote Command Executor**.
-
-This config is found inside your main hummingbot folder then `conf\conf_global.yml`
-
-```yaml
-# Remote commands
-remote_commands_enabled: true
-remote_commands_api_key: a9ba4b61-6f6d-41cf-85c3-7cfdfcbea0f3
-remote_commands_ws_url: ws://localhost:10073/wss
-# Specify a routing name (for use with multiple Hummingbot instances)
-remote_commands_routing_name:
-# Recommended to keep this on so no events are missed in the case of a network drop out.
-remote_commands_ignore_first_event: true
-# Whether to disable console command processing for remote command events.
-# Best to disable this if using in custom scripts or strategies
-remote_commands_disable_console_commands: false
-# You can specify how to translate received commands to Hummingbot commands here
-# eg.
-# remote_commands_translate_commands:
-#   long: start
-#   short: stop
-remote_commands_translate_commands:
-  long: start
-  short: stop
-```
-
-</details>
-
-
-### Filtering events
-
-<details>
-<summary>Expand ...</summary>
-
-To filter events received based on the `event_descriptor`, change your websockets URL to:
-```html
-ws://localhost:10073/wss/<event-descriptor>
-```
-
-Where `event-descriptor` matches the `event_descriptor` or *name* value of the events you wish to receive.
 
 </details>
 
 
 ### Command Shortcuts
+
+![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) :warning: **This isn't yet implemented.**
 
 <details>
 <summary>Expand ...</summary>
@@ -456,48 +394,9 @@ ___
 <details>
 <summary>Test Connection ...</summary>
 
-You can enable and disable websockets authentication in the config with these commands.
-(You must disable websockets authentication for the in-browser test to work.)
+To test basic connection, use any MQTT client and connect to the same broker as RogerThat, then subscribe to the `rogerthat/#` topic.
 
-<details>
-<summary>Linux/Mac</summary>
-
-```bash
-scripts/setup_config.sh --enable-websocket-auth
-scripts/setup_config.sh --disable-websocket-auth
-```
-</details>
-<details>
-<summary>Windows</summary>
-
-```bat
-scripts\setup_config.bat --enable-websocket-auth
-scripts\setup_config.bat --disable-websocket-auth
-```
-</details>
-
-Test the websocket feed in your browser with this js code:
-
-```javascript
-var ws = new WebSocket('ws://localhost:10073/wss');
-ws.onmessage = function (event) {
-    console.log(event.data);
-};
-```
-
-Or run the python test listener (requires source installation steps but can authenticate):
-
-```bash
-python tests/test_websocket.py
-```
-
-Or test the REST url here:
-
-```html
-http://localhost:10073/api/hbot/?api_key=<hummingbot-apikey>
-```
-
-Where `<hummingbot-apikey>` is the generated api key found in `web_server.yml` under `api_allowed_keys_hbot`.
+There is also a small python script in the `examples/` folder which can be used to mimic a TradingView alert. You'll then see the MQTT message if you subscribe to your chosen topic.
 
 </details>
 
