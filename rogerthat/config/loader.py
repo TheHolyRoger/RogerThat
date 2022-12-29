@@ -1,5 +1,6 @@
 # Private config vars
 import sys
+
 from rogerthat.config.utils import config_utils
 
 

@@ -1,5 +1,6 @@
-from quart import json
 from decimal import Decimal as Dec
+
+from quart import json
 
 
 class JSONEncoder(json.JSONEncoder):

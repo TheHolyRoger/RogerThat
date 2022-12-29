@@ -1,6 +1,4 @@
-from quart import (
-    jsonify,
-)
+from quart import jsonify
 
 
 class route_handlers_main:
