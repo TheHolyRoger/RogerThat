@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from rogerthat.db.models.tradingview_event import tradingview_event
 from rogerthat.logging.configure import AsyncioLogger
@@ -32,16 +33,28 @@ class request_processing_queue:
             self._listen_for_requests()
         )
 
+    def stop(self):
+        if self._request_processing_queue_task is not None:
+            self._request_processing_queue_task.cancel()
+            self._request_processing_queue_task = None
+        logger.debug("Request Processing Queue stopped.")
+
     async def _listen_for_requests(self):
         while True:
-            req = await self._request_processing_queue.get()
-            if isinstance(req, list):
-                for req_msg in req:
-                    tv_event = tradingview_event(from_json=req_msg)
+            try:
+                req = await self._request_processing_queue.get()
+                if isinstance(req, list):
+                    for req_msg in req:
+                        tv_event = tradingview_event(from_json=req_msg)
+                        safe_ensure_future(tv_event.process_event(), with_timeout=1800.0)
+                else:
+                    tv_event = tradingview_event(from_json=req)
                     safe_ensure_future(tv_event.process_event(), with_timeout=1800.0)
-            else:
-                tv_event = tradingview_event(from_json=req)
-                safe_ensure_future(tv_event.process_event(), with_timeout=1800.0)
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:
+                tb = "".join(traceback.TracebackException.from_exception(e).format())
+                logger.error(f"Error in request_processing_queue: {e}\n{tb}")
 
     def add_request(self, request):
         if not self._request_processing_queue:

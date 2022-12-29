@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 from socket import gaierror
 from ssl import SSLCertVerificationError, SSLEOFError
 
@@ -51,13 +52,25 @@ class mqtt_queue:
                 self._listen_for_broadcasts()
             )
 
+    def stop(self):
+        if self._mqtt_queue_task is not None:
+            self._mqtt_queue_task.cancel()
+            self._mqtt_queue_task = None
+        logger.debug("MQTT Queue stopped.")
+
     async def _listen_for_broadcasts(self):
         if not self._mqtt:
             raise Exception("listen_for_broadcasts called but mqtt is not enabled!")
         while True:
-            msg = await self._mqtt_queue.get()
-            publisher = self._mqtt.get_publisher_for(msg.topic)
-            publisher.broadcast(msg.to_pydantic)
+            try:
+                msg = await self._mqtt_queue.get()
+                publisher = self._mqtt.get_publisher_for(msg.topic)
+                publisher.broadcast(msg.to_pydantic)
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:
+                tb = "".join(traceback.TracebackException.from_exception(e).format())
+                logger.error(f"Error in mqtt_queue: {e}\n{tb}")
 
     def broadcast(self, event):
         if not self._mqtt_queue:
