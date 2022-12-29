@@ -45,6 +45,7 @@ EVENT_KEYS = [
 class filtered_event_keys:
     _filtered = None
     _key_translations = {
+        "timestamp_event": "timestamp",
         "event_type": "type",
     }
 
