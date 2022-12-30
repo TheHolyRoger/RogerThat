@@ -11,18 +11,20 @@ except Exception:
     sys.exit(0)
 
 
+hummingbot_instance = "hummingbot_instance_1"
+
 test_data = {
-    "topic": "hbot/hummingbot_instance_1/start",
-    "log_level": "DEBUG"
+    "topic": f"hbot/{hummingbot_instance}/stop",
+    "skip_order_cancellation": False,
 }
 
 test_data_list = [
     {
-        "topic": "hbot/hummingbot_instance_1/start",
+        "topic": f"hbot/{hummingbot_instance}/start",
         "log_level": "DEBUG"
     },
     {
-        "topic": "hbot/hummingbot_instance_1/external/events/my_event",
+        "topic": f"hbot/{hummingbot_instance}/external/events/my_event",
         "type": "external_event",
         "timestamp": 1234567890,
         "sequence": 1234567890,
@@ -34,7 +36,8 @@ test_data_list = [
             "volume": "{{volume}}",
             "position": "{{strategy.market_position}}",
             "inventory": "{{strategy.order.comment}}"
-        }
+        },
+        "is_raw_msg": True,
     }
 ]
 

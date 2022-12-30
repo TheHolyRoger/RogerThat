@@ -7,6 +7,8 @@ mqtt_enable: true
 
 mqtt_instance_name: some-uid
 
+mqtt_reply_topic:
+
 mqtt_host: localhost
 mqtt_port: 1883
 mqtt_username: user

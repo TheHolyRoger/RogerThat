@@ -92,6 +92,7 @@ class tradingview_event(db_model_base,
     days = Column(Numeric)
     verbose = Column(Boolean)
     precision = Column(Integer)
+    is_raw_msg = Column(Boolean)
 
     def __init__(self,
                  from_json=None,
@@ -114,6 +115,7 @@ class tradingview_event(db_model_base,
                  days=None,
                  verbose=None,
                  precision=None,
+                 is_raw_msg=None,
                  ):
         self.topic = topic
         self.timestamp_received = int(time.time() * 1000)
@@ -135,6 +137,7 @@ class tradingview_event(db_model_base,
         self.days = days
         self.verbose = verbose
         self.precision = precision
+        self.is_raw_msg = is_raw_msg
         if Config.get_inst().tradingview_include_extra_fields:
             for evt_key in Config.get_inst().tradingview_include_extra_fields:
                 setattr(self, evt_key, None)
@@ -158,6 +161,7 @@ class tradingview_event(db_model_base,
             self.days = decimal_or_none(from_json.get("days"))
             self.verbose = bool_or_none(from_json.get("verbose"))
             self.precision = int_or_none(from_json.get("precision"))
+            self.is_raw_msg = bool_or_none(from_json.get("is_raw_msg"))
             if Config.get_inst().tradingview_include_extra_fields:
                 for evt_key in Config.get_inst().tradingview_include_extra_fields:
                     setattr(self, evt_key, from_json.get(evt_key))
@@ -169,8 +173,18 @@ class tradingview_event(db_model_base,
 
     @property
     def to_pydantic(self):
+        if self.is_raw_msg:
+            evt_dict = self.to_minimised_dict(mqtt=True)
+        else:
+            evt_dict = {
+                "timestamp": self.timestamp_received,
+                "header": {
+                    'reply_to': Config.get_inst().mqtt_reply_topic
+                },
+                "data": self.to_minimised_dict(mqtt=True),
+            }
         pydantic_model = create_model("TradingviewMessage",
-                                      **self.to_minimised_dict(mqtt=True),
+                                      **evt_dict,
                                       __base__=TradingviewMessage)
         return pydantic_model()
 
@@ -182,7 +196,6 @@ class tradingview_event(db_model_base,
             val = getattr(self, key)
             if val is not None:
                 minimised_dict[filtered_event_keys.translate(key)] = val
-
         return minimised_dict
 
     @classmethod

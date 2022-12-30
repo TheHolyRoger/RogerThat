@@ -43,11 +43,9 @@ class MQTTGateway(Node):
                  *args, **kwargs):
         self.mqtt_publisher = None
 
-        self.HEARTBEAT_URI = self.HEARTBEAT_URI.replace('$UID', Config.get_inst().mqtt_instance_name)
-        self.HEARTBEAT_URI = self.HEARTBEAT_URI.replace('$APP', Config.get_inst().app_name)
+        self.HEARTBEAT_URI = f"{Config.get_inst().app_name}/{Config.get_inst().mqtt_instance_name}/hb"
 
-        self.NODE_NAME = self.NODE_NAME.replace('$UID', Config.get_inst().mqtt_instance_name)
-        self.NODE_NAME = self.NODE_NAME.replace('$APP', Config.get_inst().app_name)
+        self.NODE_NAME = f"{Config.get_inst().app_name}.{Config.get_inst().mqtt_instance_name}"
 
         self._params = self._create_mqtt_params_from_conf()
 

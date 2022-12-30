@@ -36,6 +36,7 @@ class Config(no_setters):
     _mqtt_username = _mqtt_config['mqtt_username']
     _mqtt_password = _mqtt_config['mqtt_password']
     _mqtt_ssl = _mqtt_config['mqtt_ssl']
+    _mqtt_reply_topic = _mqtt_config.get("mqtt_reply_topic") or f"{_app_name}/{_mqtt_instance_name}/messages"
 
     # Database
     _database_protocol = _db_config.get("database_protocol", "postgresql+asyncpg")
