@@ -14,8 +14,10 @@ except Exception:
 hummingbot_instance = "hummingbot_instance_1"
 
 test_data = {
-    "topic": f"hbot/{hummingbot_instance}/stop",
-    "skip_order_cancellation": False,
+    "topic": f"hbot/{hummingbot_instance}/command_shortcuts",
+    "params": [
+        ["spreads", "4", "4"]
+    ],
 }
 
 test_data_list = [
@@ -38,6 +40,10 @@ test_data_list = [
             "inventory": "{{strategy.order.comment}}"
         },
         "is_raw_msg": True,
+    },
+    {
+        "topic": f"hbot/{hummingbot_instance}/stop",
+        "skip_order_cancellation": False,
     }
 ]
 

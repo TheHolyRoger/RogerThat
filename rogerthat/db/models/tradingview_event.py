@@ -41,6 +41,11 @@ EVENT_KEYS = [
     "precision",
 ]
 
+DICT_KEYS = [
+    "params",
+    "data",
+]
+
 
 class filtered_event_keys:
     _filtered = None
@@ -146,7 +151,10 @@ class tradingview_event(db_model_base,
             self.timestamp_event = int_or_none(from_json.get("timestamp"))
             self.sequence = int_or_none(from_json.get("sequence"))
             self.event_type = from_json.get("type")
-            self.params = from_json.get("params")
+            json_params = from_json.get("params")
+            if json_params and isinstance(json_params, list):
+                json_params = {"params": json_params}
+            self.params = json_params
             self.data = from_json.get("data")
             self.msg = from_json.get("msg")
             self.exchange = from_json.get("exchange")
@@ -188,6 +196,14 @@ class tradingview_event(db_model_base,
                                       __base__=TradingviewMessage)
         return pydantic_model()
 
+    def _unpack_list(self, key, val):
+        dict_val = None
+        if key in DICT_KEYS and len(val.keys()) == 1:
+            unpack_dict = val.get(key)
+            if unpack_dict and isinstance(unpack_dict, list):
+                dict_val = unpack_dict
+        return dict_val
+
     def to_minimised_dict(self, mqtt=False):
         minimised_dict = {}
         for i, key in enumerate(filtered_event_keys.list()):
@@ -195,7 +211,8 @@ class tradingview_event(db_model_base,
                 continue
             val = getattr(self, key)
             if val is not None:
-                minimised_dict[filtered_event_keys.translate(key)] = val
+                dict_val = self._unpack_list(key, val)
+                minimised_dict[filtered_event_keys.translate(key)] = dict_val or val
         return minimised_dict
 
     @classmethod
