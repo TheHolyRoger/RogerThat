@@ -23,7 +23,7 @@ if %dockerprune% == 1 (ECHO Pruning docker. && docker system prune -f)
 REM Run setup script via docker
 CALL scripts\setup_config.bat -s
 
-docker-compose up %daemon% db rogerthat nginx %withcertbot%
+docker compose up %daemon% db rogerthat nginx %withcertbot%
 if not "%daemon%" == "" (scripts\setup_config.bat  --print-splash)
 
 EXIT /B 0

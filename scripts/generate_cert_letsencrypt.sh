@@ -5,23 +5,25 @@ cd $(dirname $0)/..
 
 echo "### Begin generating certificate"
 
+DOCKER_BIN=$(scripts/find_docker.sh)
+
 scripts/setup_config.sh -s
 
-docker-compose stop
+$DOCKER_BIN stop
 
 echo "### Downloading SSL params ..."
-docker-compose run --rm --entrypoint "/bin/sh /letsencrypt_download_params.sh" certbot
+$DOCKER_BIN run --rm --entrypoint "/bin/sh /letsencrypt_download_params.sh" certbot
 
 
 echo "### Starting nginx ..."
-docker-compose up --force-recreate -d nginx
+$DOCKER_BIN up --force-recreate -d nginx
 echo
 
 
 echo "### Requesting Let's Encrypt certificate ..."
-docker-compose run --rm --entrypoint "/bin/sh /letsencrypt_generate.sh" certbot
+$DOCKER_BIN run --rm --entrypoint "/bin/sh /letsencrypt_generate.sh" certbot
 
 echo "### Stopping nginx ..."
-docker-compose stop nginx
+$DOCKER_BIN stop nginx
 
 echo "### Finished generating certificate you can now start RogerThat!"

@@ -131,7 +131,7 @@ ___
 
 Press ctrl+c if running interactively, or run the following command to stop RogerThat:
 ```bash
-docker-compose stop
+docker compose stop
 ```
 
 ___

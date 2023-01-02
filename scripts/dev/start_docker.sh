@@ -3,6 +3,8 @@ set -e
 
 cd $(dirname $0)/../..
 
+DOCKER_BIN=$(scripts/find_docker.sh)
+
 SCRIPT=`basename ${BASH_SOURCE[0]}`
 
 NORM=`tput sgr0`
@@ -56,7 +58,7 @@ if [ "${dontbuild} " == "1 " ]; then
     echo "Skipping build."
 else
     docker image prune -f
-    docker-compose build --progress plain
+    $DOCKER_BIN build --progress plain
 fi
 
 echo "Calling setup script"
@@ -67,5 +69,5 @@ scripts/setup_config.sh -s
 if [ "${nostart} " == "1 " ]; then
     echo "Skipping start."
 else
-    docker-compose up db rogerthat nginx
+    $DOCKER_BIN up db rogerthat nginx
 fi

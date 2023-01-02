@@ -7,6 +7,8 @@ fi
 
 cd $(dirname $0)/..
 
+DOCKER_BIN=$(scripts/find_docker.sh)
+
 SCRIPT=`basename ${BASH_SOURCE[0]}`
 
 NORM=`tput sgr0`
@@ -67,7 +69,7 @@ fi
 # Run setup script via docker
 scripts/setup_config.sh -s
 
-docker-compose up${s_dm} db rogerthat nginx${s_cb}
+$DOCKER_BIN up${s_dm} db rogerthat nginx${s_cb}
 
 if [ "${daemon} " == "1 " ]; then
     scripts/setup_config.sh  --print-splash
