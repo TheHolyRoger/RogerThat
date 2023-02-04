@@ -14,6 +14,7 @@ mkdir -p ./data/db
 mkdir -p ./data/certbot/certs
 mkdir -p ./data/certbot/www
 
+chown -R $PUID:$PGID ./configs
 chown -R $PUID:$PGID ./data
 
 docker run -it --rm \
