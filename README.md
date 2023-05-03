@@ -141,6 +141,8 @@ ___
 
 ## Configuration
 
+To connect to an MQTT server on the localhost use `172.17.0.1` or `host.docker.internal` as the mqtt host.
+
 You can use the config setup script via docker by running the following commands:
 
 <details>

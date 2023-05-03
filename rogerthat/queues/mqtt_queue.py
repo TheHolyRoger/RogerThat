@@ -25,6 +25,7 @@ class mqtt_queue:
         self._mqtt_queue = None
         self._mqtt: MQTTGateway = None
         self._failure_msg = "Failed to connect to MQTT Broker!"
+        self._is_ready = False
 
         if Config.get_inst().mqtt_enable:
             try:
@@ -32,7 +33,11 @@ class mqtt_queue:
                 self._mqtt.run()
                 self.start()
             except (ConnectionRefusedError, gaierror, OSError) as e:
-                logger.error(f"{self._failure_msg} Check host and port! - {e}")
+                if self._mqtt is not None:
+                    extra_debug = f" Parameters: {self._mqtt._params}"
+                else:
+                    extra_debug = ""
+                logger.error(f"{self._failure_msg} Check host and port! - {e}.{extra_debug}")
             except SSLEOFError:
                 logger.error(f"{self._failure_msg} Using plain HTTP port with SSL enabled!")
             except SSLCertVerificationError:
@@ -40,7 +45,8 @@ class mqtt_queue:
             except Exception as e:
                 logger.error(e)
                 raise e
-            logger.info("MQTT Gateway is ready.")
+            if self._is_ready:
+                logger.info("MQTT Gateway is ready.")
 
     def _create_queue(self):
         self._mqtt_queue = asyncio.Queue()
@@ -51,6 +57,7 @@ class mqtt_queue:
             self._mqtt_queue_task = safe_ensure_future(
                 self._listen_for_broadcasts()
             )
+            self._is_ready = True
 
     def stop(self):
         if self._mqtt_queue_task is not None:
