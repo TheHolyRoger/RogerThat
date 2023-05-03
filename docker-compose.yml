@@ -11,6 +11,8 @@ services:
     env_file:
       - ./configs/env_postgres.env
     user: "${PUID:-999}:${PGID:-999}"
+    networks:
+      - rogerthat-bridge
   nginx:
     image: theholiestroger/nginx-iptables:latest
     cap_add:
@@ -30,6 +32,8 @@ services:
     ports:
       - 80:8080
       - 443:8443
+    networks:
+      - rogerthat-bridge
   certbot:
     image: certbot/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
@@ -57,3 +61,9 @@ services:
     depends_on:
       - db
     entrypoint: ["/home/rogerthat/docker_compose_entrypoint.sh"]
+    networks:
+      - rogerthat-bridge
+
+networks:
+  rogerthat-bridge:
+    driver: bridge
