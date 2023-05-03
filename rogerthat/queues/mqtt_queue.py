@@ -75,6 +75,7 @@ class mqtt_queue:
     def broadcast(self, event):
         if not self._mqtt_queue:
             logger.error("Cannot broadcast, MQTT not started!")
+            return
         if self._mqtt:
             logger.debug("Adding event to MQTT queue.")
             self._mqtt_queue.put_nowait(event)
