@@ -1,6 +1,8 @@
+import json
 import os
 import secrets
 import shutil
+import subprocess
 import uuid
 
 import ruamel.yaml
@@ -16,7 +18,8 @@ from rogerthat.utils.yaml import (
 
 class config_utils:
 
-    _config_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "configs")
+    _root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    _config_dir = os.path.join(_root_dir, "configs")
     _config_sample_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "samples")
 
     # Config file names
@@ -218,3 +221,92 @@ class config_utils:
     @classmethod
     def load_config_web(cls):
         return cls.load_config(cls._conf_file_web)
+
+    @classmethod
+    def load_docker_compose(cls):
+        return load_yml_from_file(os.path.join(cls._root_dir, "docker-compose.yml"))
+
+    @classmethod
+    def save_docker_compose(cls, data):
+        return save_yml_to_file(data, os.path.join(cls._root_dir, "docker-compose.yml"))
+
+    @classmethod
+    def emqx_mqtt_find_network(cls):
+        found_network = None
+        try:
+            output = subprocess.check_output(["docker", "network", "ls"])
+            lines = output.decode().replace("\r", "\n").replace("\n\n", "\n").split("\n")
+            lines = [line.split() for line in lines if len(line)]
+            for line in lines:
+                if len(line) >= 2 and "emqx" in line[1]:
+                    found_network = line[1]
+                    break
+        except Exception:
+            pass
+        return found_network
+
+    @classmethod
+    def emqx_mqtt_inspect_network(cls, network_name):
+        found_hostname = None
+        try:
+            output = subprocess.check_output(["docker", "network", "inspect", network_name])
+            output_data = json.loads(output.decode())
+            output_data = output_data[0] if isinstance(output_data, list) and len(output_data) else output_data
+            containers = output_data["Containers"]
+            if len(containers):
+                for container_id, container in containers.items():
+                    if "emqx" in container["Name"]:
+                        found_hostname = container["Name"]
+                        break
+        except Exception:
+            pass
+        return found_hostname
+
+    @classmethod
+    def emqx_mqtt_edit_compose_file(cls, emqx_network):
+        try:
+            changed = False
+            compose_data = cls.load_docker_compose()
+            root_networks = compose_data["networks"]
+            if emqx_network not in root_networks.keys():
+                new_networks_root = dict()
+                for net, net_conf in root_networks.items():
+                    if "emqx" in net:
+                        continue
+                    new_networks_root[net] = net_conf
+                new_networks_root[emqx_network] = {"external": True}
+                compose_data["networks"] = new_networks_root
+                changed = True
+            rogerthat_networks = compose_data["services"]["rogerthat"]["networks"]
+            if emqx_network not in rogerthat_networks:
+                new_networks_rthat = list()
+                for net in rogerthat_networks:
+                    if "emqx" in net:
+                        continue
+                    new_networks_rthat.append(net)
+                new_networks_rthat.append(emqx_network)
+                compose_data["services"]["rogerthat"]["networks"] = new_networks_rthat
+                changed = True
+            return compose_data if changed else None
+        except Exception:
+            return None
+
+    @classmethod
+    def emqx_mqtt_save_hostname(cls, emqx_host):
+        config = cls.load_config(cls._conf_file_mqtt)
+        config["mqtt_host"] = emqx_host
+        cls.save_config(config, cls._conf_file_mqtt)
+
+    @classmethod
+    def setup_emqx_docker_hostname(cls):
+        emqx_network = cls.emqx_mqtt_find_network()
+        if emqx_network is None:
+            return
+        emqx_host = cls.emqx_mqtt_inspect_network(emqx_network)
+        if emqx_host is None:
+            return
+        compose_data = cls.emqx_mqtt_edit_compose_file(emqx_network)
+        if compose_data is None:
+            return
+        cls.emqx_mqtt_save_hostname(emqx_host)
+        cls.save_docker_compose(compose_data)

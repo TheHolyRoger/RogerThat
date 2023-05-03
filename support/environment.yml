@@ -12,6 +12,7 @@ dependencies:
     - aiohttp==3.8.3
     - alembic==1.7.7
     - asyncpg==0.25.0
+    - commlib-py==0.10.6
     - pre-commit==2.15.0
     - python-dateutil==2.8.2
     - quart==0.17.0
@@ -20,4 +21,3 @@ dependencies:
     - sqlalchemy==1.4.32
     - ujson==4.1.0
     - websockets==10.2
-    - git+https://github.com/robotics-4-all/commlib-py.git@f4d11c37f4aaaa20600e748fcb09bf3487f057d1

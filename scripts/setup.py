@@ -27,6 +27,8 @@ def parse_args():
                         help="Disable iptables firewall rules to only allow Cloudflare traffic.")
     parser.add_argument('--print-splash', dest="print_splash", action='store_true',
                         help="Print launch screen.")
+    parser.add_argument('--setup-emqx-docker-hostname', dest="setup_emqx_docker_hostname", action='store_true',
+                        help="Setup EMQX MQTT Docker Hostname (see README).")
     return parser.parse_args()
 
 
@@ -35,6 +37,8 @@ if __name__ == "__main__":
     if args.print_splash:
         print(splash_msg)
         quit()
+    if args.setup_emqx_docker_hostname:
+        config_utils.setup_emqx_docker_hostname()
     if args.delete_configs:
         config_utils.delete_existing_configs()
     if args.setup_configs:

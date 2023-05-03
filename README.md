@@ -176,6 +176,26 @@ mqtt_host: host.docker.internal
 <details>
 <summary>Localhost, Docker Engine based Broker</summary>
 
+Use the setup command as below to automagically find your EMQX hostname and update compose and config files:
+
+<details>
+<summary>Linux/Mac</summary>
+
+```bash
+scripts/setup_config.sh --setup-emqx-docker-hostname
+```
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+scripts\setup_config.bat --setup-emqx-docker-hostname
+```
+</details>
+
+<details>
+<summary>Manual Steps if script failes</summary>
+
 Running a MQTT broker via Docker in a Linux box on the same host (e.g. the default hummingbot EMQX setup) you'll need to add rogerthat to the same docker network.
 
 To find the name of the docker network run the command:
@@ -244,6 +264,8 @@ You can then edit your `configs/gateway_mqtt.yml` file and add the service name 
 mqtt_host: hummingbot_broker-emqx1-1
 ...
 ```
+
+</details>
 
 </details>
 
