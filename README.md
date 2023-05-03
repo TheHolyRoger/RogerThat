@@ -141,9 +141,84 @@ ___
 
 ## Configuration
 
-To connect to an MQTT server on the localhost use `172.17.0.1` or `host.docker.internal` as the mqtt host.
+Edit the configuration files in `./configs` as needed.
 
-You can use the config setup script via docker by running the following commands:
+___
+
+### MQTT
+
+If running a MQTT broker locally (not docker) you should be able to use `localhost` as your `mqtt_host`:
+
+```yaml
+...
+mqtt_host: localhost
+...
+```
+
+Running a MQTT broker via Docker Desktop (not advised) you should be able to use `host.docker.internal` as your `mqtt_host`:
+
+```yaml
+...
+mqtt_host: host.docker.internal
+...
+```
+
+Running a MQTT broker via Docker in a Linux box on the same host (e.g. the default hummingbot EMQX setup) you'll need to add rogerthat to the same docker network.
+
+To find the name of the docker network run the command:
+```bash
+docker network ls
+```
+
+You should see something like:
+```
+e872661fddcc   hummingbot_broker_emqx-bridge   bridge    local
+```
+
+Edit the `docker-compose.yml` file in the root directory.
+
+Add the emqx network to the network list at the bottom like this:
+
+```yaml
+...
+networks:
+  rogerthat-bridge:
+    driver: bridge
+  hummingbot_broker_emqx-bridge:
+    external: true
+
+```
+
+Add the emqx network to the rogerthat service like this:
+```yaml
+    ...
+    entrypoint: ["/home/rogerthat/docker_compose_entrypoint.sh"]
+    networks:
+      - rogerthat-bridge
+      - hummingbot_broker_emqx-bridge
+    ...
+```
+
+You can then edit your `configs/gateway_mqtt.yml` file and add the service name e.g. `emqx1` as your `mqtt_host`:
+
+```yaml
+...
+mqtt_host: emqx1
+...
+```
+
+The service name will match the name specified in your MQTT broker compose file e.g.:
+
+```yaml
+services:
+  emqx1:
+```
+
+___
+
+### Special Tasks
+
+For certain special tasks, you can use the config setup script via docker by running the following commands:
 
 <details>
 <summary>Linux/Mac</summary>
