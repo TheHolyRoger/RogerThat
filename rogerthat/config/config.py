@@ -33,8 +33,8 @@ class Config(no_setters):
     _mqtt_instance_name = _mqtt_config['mqtt_instance_name']
     _mqtt_host = _mqtt_config['mqtt_host']
     _mqtt_port = _mqtt_config['mqtt_port']
-    _mqtt_username = _mqtt_config['mqtt_username']
-    _mqtt_password = _mqtt_config['mqtt_password']
+    _mqtt_username = _mqtt_config['mqtt_username'] if len(str(_mqtt_config.get('mqtt_username', '')).strip()) else ''
+    _mqtt_password = _mqtt_config['mqtt_password'] if len(str(_mqtt_config.get('mqtt_password', '')).strip()) else ''
     _mqtt_ssl = _mqtt_config['mqtt_ssl']
     _mqtt_reply_topic = _mqtt_config.get("mqtt_reply_topic") or f"{_app_name}/{_mqtt_instance_name}/messages"
 
