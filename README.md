@@ -147,6 +147,16 @@ ___
 
 ### MQTT
 
+<details>
+<summary>Localhost, Non-Docker Broker</summary>
+
+
+
+</details>
+
+<details>
+<summary>Localhost, Non-Docker Broker</summary>
+
 If running a MQTT broker locally (not docker) you should be able to use `localhost` as your `mqtt_host`:
 
 ```yaml
@@ -155,6 +165,11 @@ mqtt_host: localhost
 ...
 ```
 
+</details>
+
+<details>
+<summary>Localhost, Docker Desktop based Broker</summary>
+
 Running a MQTT broker via Docker Desktop (not advised) you should be able to use `host.docker.internal` as your `mqtt_host`:
 
 ```yaml
@@ -162,6 +177,11 @@ Running a MQTT broker via Docker Desktop (not advised) you should be able to use
 mqtt_host: host.docker.internal
 ...
 ```
+
+</details>
+
+<details>
+<summary>Localhost, Docker Engine based Broker</summary>
 
 Running a MQTT broker via Docker in a Linux box on the same host (e.g. the default hummingbot EMQX setup) you'll need to add rogerthat to the same docker network.
 
@@ -174,6 +194,8 @@ You should see something like:
 ```
 e872661fddcc   hummingbot_broker_emqx-bridge   bridge    local
 ```
+
+The network name in this example is `hummingbot_broker_emqx-bridge`.
 
 Edit the `docker-compose.yml` file in the root directory.
 
@@ -199,20 +221,38 @@ Add the emqx network to the rogerthat service like this:
     ...
 ```
 
-You can then edit your `configs/gateway_mqtt.yml` file and add the service name e.g. `emqx1` as your `mqtt_host`:
+Now run the following command to find the hostname of your MQTT broker replacing `hummingbot_broker_emqx-bridge` as needed:
+```bash
+docker network inspect hummingbot_broker_emqx-bridge
+```
+
+You will see the hostname of the MQTT broker in the output like this:
+
+```json
+    "Containers":
+    {
+        "eb1d17a525cb06a863d10f227cdf7edcd713371fe3f699921360b7b23c512c78":
+        {
+            "Name": "hummingbot_broker-emqx1-1",
+            "EndpointID": "8d8c81332a0284e76246bf0bb19d25987e255d9cf9c43cdeed7df9f5ea436cde",
+            "MacAddress": "02:42:ac:13:00:02",
+            "IPv4Address": "172.19.0.2/16",
+            "IPv6Address": ""
+        }
+    }
+```
+
+Where `hummingbot_broker-emqx1-1` is the hostname of the MQTT broker in this example.
+
+You can then edit your `configs/gateway_mqtt.yml` file and add the service name e.g. `hummingbot_broker-emqx1-1` as your `mqtt_host`:
 
 ```yaml
 ...
-mqtt_host: emqx1
+mqtt_host: hummingbot_broker-emqx1-1
 ...
 ```
 
-The service name will match the name specified in your MQTT broker compose file e.g.:
-
-```yaml
-services:
-  emqx1:
-```
+</details>
 
 ___
 
