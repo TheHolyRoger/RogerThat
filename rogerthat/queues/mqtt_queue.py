@@ -31,8 +31,8 @@ class mqtt_queue:
                 self._mqtt = MQTTGateway()
                 self._mqtt.run()
                 self.start()
-            except (ConnectionRefusedError, gaierror, OSError):
-                logger.error(f"{self._failure_msg} Check host and port!")
+            except (ConnectionRefusedError, gaierror, OSError) as e:
+                logger.error(f"{self._failure_msg} Check host and port! - {e}")
             except SSLEOFError:
                 logger.error(f"{self._failure_msg} Using plain HTTP port with SSL enabled!")
             except SSLCertVerificationError:
