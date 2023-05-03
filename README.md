@@ -150,13 +150,6 @@ ___
 <details>
 <summary>Localhost, Non-Docker Broker</summary>
 
-
-
-</details>
-
-<details>
-<summary>Localhost, Non-Docker Broker</summary>
-
 If running a MQTT broker locally (not docker) you should be able to use `localhost` as your `mqtt_host`:
 
 ```yaml
