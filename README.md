@@ -194,7 +194,7 @@ scripts\setup_config.bat --setup-emqx-docker-hostname
 </details>
 
 <details>
-<summary>Manual Steps if script failes</summary>
+<summary>Manual Steps if script fails</summary>
 
 Running a MQTT broker via Docker in a Linux box on the same host (e.g. the default hummingbot EMQX setup) you'll need to add rogerthat to the same docker network.
 

@@ -20,6 +20,15 @@ if not "%1" == "" GOTO Help
 
 if %dockerprune% == 1 (ECHO Pruning docker. && docker system prune -f)
 
+docker run -it --rm ^
+--volume "./configs:/configs" ^
+--volume "./data:/data" ^
+--volume "./logs:/logs" ^
+--entrypoint "/bin/bash" ^
+--user root ^
+"theholiestroger/rogerthat:mqtt" ^
+"-l" "-c" "chown -R rogerthat:rogerthat /configs /logs; chown -R 999:999 /data"
+
 REM Run setup script via docker
 CALL scripts\setup_config.bat -s
 

@@ -66,6 +66,15 @@ if [ "${daemon} " == "1 " ]; then
     s_dm=" -d"
 fi
 
+docker run -it --rm \
+--volume "$(pwd)/configs:/configs" \
+--volume "$(pwd)/data:/data" \
+--volume "$(pwd)/logs:/logs" \
+--entrypoint "/bin/bash" \
+--user root \
+"theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-mqtt}" \
+"-l" "-c" "chown -R rogerthat:rogerthat /configs /logs; chown -R ${PUID:-999}:${PGID:-999} /data"
+
 # Run setup script via docker
 scripts/setup_config.sh -s
 
