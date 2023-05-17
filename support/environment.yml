@@ -19,5 +19,5 @@ dependencies:
     - quart-auth==0.6.0
     - ruamel-yaml==0.17.16
     - sqlalchemy==1.4.32
-    - ujson==4.1.0
+    - ujson==5.7.0
     - websockets==10.2
