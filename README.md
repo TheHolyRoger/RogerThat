@@ -111,19 +111,19 @@ Whilst RogerThat's purpose is to bridge **TradingView** and **Hummingbot**, it c
 ---
 ## Install RogerThat
 
-Download and extract this [**whole repository**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/mqtt.zip).
+Download and extract this [**whole repository**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
 
 <details>
 <summary>Linux/Mac</summary>
 
 ```bash
-wget https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/mqtt.zip
-unzip mqtt.zip
+wget https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip
+unzip master.zip
 ```
 
 Change directory:
 ```bash
-cd RogerThat-mqtt
+cd RogerThat-master
 ```
 ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) **Important! If you encounter an error message when you start it for the first time: `Error - Failed to create tables` you can resolve it by following these steps. Press `Ctrl + C` to exit the program, and then start it again. This should help resolve the issue.**
 
@@ -135,7 +135,7 @@ cd RogerThat-mqtt
 <details>
 <summary>Windows</summary>
 
-Manually download and extract the [**repository zip file**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/mqtt.zip).
+Manually download and extract the [**repository zip file**](https://github.com/TheHolyRoger/RogerThat/archive/refs/heads/master.zip).
 
 Open up Windows CMD and **switch directory to the extracted zip folder**.
 
