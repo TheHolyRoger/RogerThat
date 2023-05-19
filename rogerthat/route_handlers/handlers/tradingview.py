@@ -1,10 +1,7 @@
-from quart import (
-    abort,
-    jsonify,
-)
+from quart import abort, jsonify
+
 from rogerthat.models.web_request import web_request
-from rogerthat.db.models.tradingview_event import tradingview_event
-from rogerthat.utils.asyncio_tasks import safe_ensure_future
+from rogerthat.queues.request_processing_queue import request_processing_queue
 
 
 class route_handlers_tradingview:
@@ -16,7 +13,6 @@ class route_handlers_tradingview:
         await request.build_request_args()
         valid_request = await request.check_is_valid(for_tv_api=True)
         if valid_request:
-            tv_event = tradingview_event(from_json=request.json_data)
-            safe_ensure_future(tv_event.process_event())
+            request_processing_queue.get_instance().add_request(request.json_data)
             return jsonify({"success": True})
         return abort(401)

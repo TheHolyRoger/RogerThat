@@ -7,6 +7,8 @@ fi
 
 cd $(dirname $0)/..
 
+DOCKER_BIN=$(scripts/find_docker.sh)
+
 SCRIPT=`basename ${BASH_SOURCE[0]}`
 
 NORM=`tput sgr0`
@@ -64,10 +66,19 @@ if [ "${daemon} " == "1 " ]; then
     s_dm=" -d"
 fi
 
+docker run -it --rm \
+--volume "$(pwd)/configs:/configs" \
+--volume "$(pwd)/data:/data" \
+--volume "$(pwd)/logs:/logs" \
+--entrypoint "/bin/bash" \
+--user root \
+"theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-mqtt}" \
+"-l" "-c" "chown -R rogerthat:rogerthat /configs /logs; chown -R ${PUID:-999}:${PGID:-999} /data"
+
 # Run setup script via docker
 scripts/setup_config.sh -s
 
-docker-compose up${s_dm} db rogerthat nginx${s_cb}
+$DOCKER_BIN up${s_dm} db rogerthat nginx${s_cb}
 
 if [ "${daemon} " == "1 " ]; then
     scripts/setup_config.sh  --print-splash

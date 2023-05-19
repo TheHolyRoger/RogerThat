@@ -3,6 +3,8 @@ set -e
 
 cd $(dirname $0)/../..
 
+DOCKER_BIN=$(scripts/find_docker.sh)
+
 SCRIPT=`basename ${BASH_SOURCE[0]}`
 
 NORM=`tput sgr0`
@@ -49,14 +51,14 @@ if [ "${dockerprune} " == "1 " ]; then
     echo "Pruning docker."
     docker system prune -f
     docker rmi theholiestroger/nginx-iptables:latest || true
-    docker rmi "theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-latest}" || true
+    docker rmi "theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-mqtt}" || true
 fi
 
 if [ "${dontbuild} " == "1 " ]; then
     echo "Skipping build."
 else
     docker image prune -f
-    docker-compose build --progress plain
+    $DOCKER_BIN build --progress plain
 fi
 
 echo "Calling setup script"
@@ -67,5 +69,5 @@ scripts/setup_config.sh -s
 if [ "${nostart} " == "1 " ]; then
     echo "Skipping start."
 else
-    docker-compose up db rogerthat nginx
+    $DOCKER_BIN up db rogerthat nginx
 fi

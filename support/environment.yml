@@ -6,15 +6,18 @@ dependencies:
   - python=3.8
   - pip=21.2.4
   - psycopg2
+  - pydantic=1.9
   - pip:
     - aiofiles==0.7.0
+    - aiohttp==3.8.3
     - alembic==1.7.7
     - asyncpg==0.25.0
+    - commlib-py==0.10.6
     - pre-commit==2.15.0
     - python-dateutil==2.8.2
     - quart==0.17.0
     - quart-auth==0.6.0
     - ruamel-yaml==0.17.16
     - sqlalchemy==1.4.32
-    - ujson==4.1.0
+    - ujson==5.7.0
     - websockets==10.2

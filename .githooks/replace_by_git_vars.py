@@ -44,6 +44,8 @@ git_vars['current.branch'] = subprocess.check_output([
     "HEAD",
 ]).strip().decode('utf-8')
 
+git_vars['current.readme_install_branch'] = "master"
+
 git_vars['current.commit'] = subprocess.check_output([
     "git",
     "rev-parse",

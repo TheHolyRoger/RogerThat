@@ -1,10 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.declarative import (
-    declarative_base,
-)
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.future import select
-from rogerthat.db.engine import db
 
+from rogerthat.db.engine import db_engine
 
 # Setup SQL BaseModel
 base_model = declarative_base()
@@ -23,7 +21,7 @@ class db_model_base():
         Save one.
         """
         result = None
-        async with AsyncSession(db.engine,
+        async with AsyncSession(db_engine.db().engine,
                                 expire_on_commit=False) as session:
             async with session.begin():
                 session.add_all([self])
@@ -36,7 +34,7 @@ class db_model_base():
         """
         Find one object by ID.
         """
-        async with AsyncSession(db.engine,
+        async with AsyncSession(db_engine.db().engine,
                                 expire_on_commit=False) as session:
             async with session.begin():
                 if ByID is not None:
@@ -47,7 +45,7 @@ class db_model_base():
         return result
 
     async def db_delete(self):
-        async with AsyncSession(db.engine,
+        async with AsyncSession(db_engine.db().engine,
                                 expire_on_commit=False) as session:
             async with session.begin():
                 await session.delete(self)

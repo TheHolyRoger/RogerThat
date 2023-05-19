@@ -1,0 +1,16 @@
+#########################################
+###       Gateway - MQTT config       ###
+#########################################
+template_version: 0.1
+
+mqtt_enable: true
+
+mqtt_instance_name: some-uid
+
+mqtt_reply_topic:
+
+mqtt_host: localhost
+mqtt_port: 1883
+mqtt_username: user
+mqtt_password: password
+mqtt_ssl: false

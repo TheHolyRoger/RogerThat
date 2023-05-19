@@ -8,13 +8,12 @@ Lots of issues requesting this functionality in the Conda issue tracker, no
 sign of progress (as of March 2020).
 TODO (?): support command-line flags -n and -p
 """
-import re
 import os
+import re
 import subprocess
 from functools import cmp_to_key
 
 import ruamel.yaml
-
 
 yaml = ruamel.yaml.YAML()
 

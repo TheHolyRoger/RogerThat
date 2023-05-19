@@ -1,27 +1,27 @@
 # Logging
 # from logging.config import fileConfig
 # SqlAlchemy
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-# Alembic
-from alembic import context
 # Add parent to path
 import sys
 from pathlib import Path
+
+from sqlalchemy import engine_from_config, pool
+
+# Alembic
+from alembic import context
+
 sys.path.append(str(Path('.').absolute()))
-from rogerthat.utils import path_import  # noqa: F401, E402
-from rogerthat.db.models import (  # noqa: E402
-    base_model,
-)
 from rogerthat.config.config import Config  # noqa: E402
+from rogerthat.db.models import base_model  # noqa: E402
+from rogerthat.utils import path_import  # noqa: F401, E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 alembic_config = context.config
-DB_URL = "postgresql://{0}:{1}@{2}/{3}".format(Config.database_user,
-                                               Config.database_password,
-                                               Config.database_host,
-                                               Config.database_name)
+DB_URL = "postgresql://{0}:{1}@{2}/{3}".format(Config.get_inst().database_user,
+                                               Config.get_inst().database_password,
+                                               Config.get_inst().database_host,
+                                               Config.get_inst().database_name)
 alembic_config.set_main_option('sqlalchemy.url', DB_URL)
 
 # Interpret the config file for Python logging.

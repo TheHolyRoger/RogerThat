@@ -1,5 +1,6 @@
 # Private config vars
 import sys
+
 from rogerthat.config.utils import config_utils
 
 
@@ -7,6 +8,7 @@ class config_loader:
     def __init__(self, *args, **kwargs):
         self._app_config = None
         self._db_config = None
+        self._mqtt_config = None
         self._tv_config = None
         self._web_config = None
         self.setup_configs()
@@ -20,6 +22,10 @@ class config_loader:
         return self._db_config
 
     @property
+    def mqtt_config(self):
+        return self._mqtt_config
+
+    @property
     def tv_config(self):
         return self._tv_config
 
@@ -30,6 +36,7 @@ class config_loader:
     def load_configs(self):
         self._app_config = config_utils.load_config_app()
         self._db_config = config_utils.load_config_db()
+        self._mqtt_config = config_utils.load_config_mqtt()
         self._tv_config = config_utils.load_config_tv()
         self._web_config = config_utils.load_config_web()
 

@@ -1,4 +1,12 @@
 class no_setters(object):
+    _shared_instance: "no_setters" = None
+
+    @classmethod
+    def get_inst(cls) -> "no_setters":
+        if cls._shared_instance is None:
+            cls._shared_instance = cls()
+        return cls._shared_instance
+
     def __init__(self):
         pass
 

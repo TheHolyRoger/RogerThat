@@ -11,4 +11,4 @@ class time_in_seconds_constants(no_setters):
     _year = int(_day * 365)
 
 
-time_in_seconds = time_in_seconds_constants()
+time_in_seconds = time_in_seconds_constants.get_inst()

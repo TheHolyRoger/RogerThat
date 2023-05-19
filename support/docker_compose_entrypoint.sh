@@ -28,7 +28,7 @@ killpg(){
   echo "Beginning RogerThat Shutdown."
   rogerthat_pid=`cat .rogerthat.pid`
   echo "Killing PID $rogerthat_pid."
-  kill "$rogerthat_pid"
+  kill -15 "$rogerthat_pid"
   while [ "$(ps -ax | grep [p]ython)" != "" ]; do
     sleep 1s
   done

@@ -14,10 +14,8 @@ mkdir -p ./data/db
 mkdir -p ./data/certbot/certs
 mkdir -p ./data/certbot/www
 
-chown -R $PUID:$PGID ./data
-
 docker run -it --rm \
 --volume "$(pwd)/configs:/configs" \
-"theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-latest}" \
+"theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-mqtt}" \
 ./docker_start_setup_script.sh \
 "$@"

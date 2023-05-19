@@ -10,7 +10,7 @@ splash_msg = """Roger that?
 
 =======================================================================================
 Welcome to Roger That, a mini web server designed to receive TradingView webhook alerts
-(or similar) and forward them to Hummingbot via websockets or REST queries.
+(or similar) and forward them to Hummingbot via the MQTT Bridge.
 
 Server is now listening and serving your every command.
 
