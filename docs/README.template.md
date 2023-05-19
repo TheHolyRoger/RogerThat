@@ -1,5 +1,6 @@
 # ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) Important!! RogerThat has been rewritten for MQTT!
 ## Setup has completely changed to support MQTT with Hummingbot's new MQTT Bridge
+## RogerThat currently works on Linux/Mac Intel and Windows. Mac M1 is not currently supported. It has been tested on Mac Intel and Ubuntu 18.04, 20.04, 22.04.
 
 # RogerThat
 
@@ -15,6 +16,7 @@ Whilst RogerThat's purpose is to bridge **TradingView** and **Hummingbot**, it c
 
 - [Docker](#docker)
   * [Installation](#installation)
+  * [Install Docker Engine](#install-docker-engine)
   * [Running](#running)
   * [Stopping](#stopping)
   * [Configuration](#configuration)
@@ -28,15 +30,83 @@ Whilst RogerThat's purpose is to bridge **TradingView** and **Hummingbot**, it c
 # Docker
 ## Installation
 
-[**Install Docker**](https://docs.docker.com/engine/install/)
+[**Install Docker Desktop**](https://www.docker.com/products/docker-desktop/)
 
-[**Install Docker Compose**](https://docker-docs.netlify.app/compose/install/#install-compose)
+![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) :warning: **Docker Desktop only works if you have a graphical user interface (GUI). For headless servers, use the installation method: `Install Docker Engine`.**
 
-![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) :warning: **Be sure to use the latest docker-compose version number when installing.**
+---
+## Install Docker Engine
+
+<details>
+ <summary>General Steps</summary>
+
+[**Install Docker Engine (Headless servers)**](https://docs.docker.com/engine/install/)
 
 [**Fix Docker Permissions**](https://docs.docker.com/engine/install/linux-postinstall/)
 
 ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) :warning: **When running on Linux be sure to apply the post install steps or you WILL run into permission errors.**
+ 
+ </details>
+
+<details>
+ <summary>Debian/Ubuntu Steps</summary>
+ 
+ First, you need to make sure your system is up-to-date. Do this by running the following commands:
+ ```bash
+ sudo apt-get update && sudo apt-get upgrade
+ ```
+ Next, uninstall any existing versions:
+ ```bash
+ sudo apt-get remove docker docker-engine docker.io containerd runc
+ ```
+ Next, install some necessary packages that Docker needs:
+ ```bash
+ sudo apt-get install apt-transport-https ca-certificates curl software-properties-common gnupg
+ ```
+ Add the GPG key for Docker's official repository to your system:
+ ```bash
+ sudo install -m 0755 -d /etc/apt/keyrings
+ curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+ sudo chmod a+r /etc/apt/keyrings/docker.gpg
+ ```
+ Add Docker's repository to your APT sources:
+ ```bash
+ echo \
+  "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+ ```
+ Update the package database with Docker packages from the newly added repo:
+ ```bash
+ sudo apt-get update
+ ```
+ Now you can install Docker:
+ ```bash
+ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+ ```
+ Docker should now be installed, the daemon started, and the process should run on boot. You can verify this by checking the service's status:
+ ```bash
+ sudo systemctl status docker
+ ```
+
+ Use this command to create the Docker group if it doesn't exist:
+ ```bash
+ sudo groupadd docker
+ ```
+ 
+ Use this command to add the current user to the Docker group:
+ ```bash
+ sudo usermod -aG docker $USER
+ ```
+ This command will make the changes effective without having to log out and log back in:
+ ```bash
+ newgrp docker
+ ```
+ 
+ </details>
+
+---
+## Install RogerThat
 
 Download and extract this [**whole repository**](https://github.com/{{repository.name}}/archive/refs/heads/{{current.branch}}.zip).
 
@@ -52,6 +122,7 @@ Change directory:
 ```bash
 cd RogerThat-{{current.branch}}
 ```
+![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) **Important! If you encounter an error message when you start it for the first time: `Error - Failed to create tables` you can resolve it by following these steps. Press `Ctrl + C` to exit the program, and then start it again. This should help resolve the issue.**
 
 ![#f03c15](https://placehold.co/15x15/f03c15/f03c15.png) :warning: **You must always run scripts from the main RogerThat directory, do not switch to the `scripts` directory**
 
@@ -138,7 +209,139 @@ ___
 
 ## Configuration
 
-You can use the config setup script via docker by running the following commands:
+Edit the configuration files in `./configs` as needed.
+
+___
+
+### MQTT
+
+<details>
+<summary>Localhost, Non-Docker Broker</summary>
+
+If running a MQTT broker locally (not docker) you should be able to use `localhost` as your `mqtt_host`:
+
+```yaml
+...
+mqtt_host: localhost
+...
+```
+
+</details>
+
+<details>
+<summary>Localhost, Docker Desktop based Broker</summary>
+
+Running a MQTT broker via Docker Desktop (not advised) you should be able to use `host.docker.internal` as your `mqtt_host`:
+
+```yaml
+...
+mqtt_host: host.docker.internal
+...
+```
+
+</details>
+
+<details>
+<summary>Localhost, Docker Engine based Broker</summary>
+
+Use the setup command as below to automagically find your EMQX hostname and update compose and config files:
+
+<details>
+<summary>Linux/Mac</summary>
+
+```bash
+scripts/setup_config.sh --setup-emqx-docker-hostname
+```
+</details>
+<details>
+<summary>Windows</summary>
+
+```bat
+scripts\setup_config.bat --setup-emqx-docker-hostname
+```
+</details>
+
+<details>
+<summary>Manual Steps if script fails</summary>
+
+Running a MQTT broker via Docker in a Linux box on the same host (e.g. the default hummingbot EMQX setup) you'll need to add rogerthat to the same docker network.
+
+To find the name of the docker network run the command:
+```bash
+docker network ls
+```
+
+You should see something like:
+```
+e872661fddcc   hummingbot_broker_emqx-bridge   bridge    local
+```
+
+The network name in this example is `hummingbot_broker_emqx-bridge`.
+
+Edit the `docker-compose.yml` file in the root directory.
+
+Add the emqx network to the network list at the bottom like this:
+
+```yaml
+...
+networks:
+  rogerthat-bridge:
+    driver: bridge
+  hummingbot_broker_emqx-bridge:
+    external: true
+
+```
+
+Add the emqx network to the rogerthat service like this:
+```yaml
+    ...
+    entrypoint: ["/home/rogerthat/docker_compose_entrypoint.sh"]
+    networks:
+      - rogerthat-bridge
+      - hummingbot_broker_emqx-bridge
+    ...
+```
+
+Now run the following command to find the hostname of your MQTT broker replacing `hummingbot_broker_emqx-bridge` as needed:
+```bash
+docker network inspect hummingbot_broker_emqx-bridge
+```
+
+You will see the hostname of the MQTT broker in the output like this:
+
+```json
+    "Containers":
+    {
+        "eb1d17a525cb06a863d10f227cdf7edcd713371fe3f699921360b7b23c512c78":
+        {
+            "Name": "hummingbot_broker-emqx1-1",
+            "EndpointID": "8d8c81332a0284e76246bf0bb19d25987e255d9cf9c43cdeed7df9f5ea436cde",
+            "MacAddress": "02:42:ac:13:00:02",
+            "IPv4Address": "172.19.0.2/16",
+            "IPv6Address": ""
+        }
+    }
+```
+
+Where `hummingbot_broker-emqx1-1` is the hostname of the MQTT broker in this example.
+
+You can then edit your `configs/gateway_mqtt.yml` file and add the service name e.g. `hummingbot_broker-emqx1-1` as your `mqtt_host`:
+
+```yaml
+...
+mqtt_host: hummingbot_broker-emqx1-1
+...
+```
+
+</details>
+
+</details>
+
+___
+
+### Special Tasks
+
+For certain special tasks, you can use the config setup script via docker by running the following commands:
 
 <details>
 <summary>Linux/Mac</summary>
@@ -310,6 +513,17 @@ The `topic` key must be present in the JSON data to be accepted.
 <details>
 <summary>Example alert data:</summary>
 
+Adjusting the Bid and Ask Spreads
+
+```json
+{
+    "topic": "hbot/hummingbot_instance_1/command_shortcuts",
+    "params": [
+        ["spreads", "1", "1"]
+    ]
+}
+```
+
 Simple Start command
 
 ```json
@@ -398,63 +612,6 @@ To test basic connection, use any MQTT client and connect to the same broker as 
 
 There is also a small python script in the `examples/` folder which can be used to mimic a TradingView alert. You'll then see the MQTT message if you subscribe to your chosen topic.
 
-</details>
-
-___
-
-# Source Installation (ADVANCED!!!)
-
-<details>
-<summary>Steps to install from **source** instead of docker ...</summary>
-
-## Installation
-
-[Install Miniconda](https://docs.conda.io/en/latest/miniconda.html) (or Anaconda)
-
-Clone this repository.
-
-```bash
-git clone git@github.com:{{repository.name}}.git
-```
-
-Change directory:
-```bash
-cd RogerThat
-```
-
-Set up and activate the environment with the following command.
-
-<details>
-<summary>Linux/Mac</summary>
-
-```bash
-./scripts/update_environment.sh
-```
-</details>
-<details>
-<summary>Windows</summary>
-
-```bat
-scripts\update_environment.bat
-```
-</details>
-
-Run the following command to generate the default configs:
-```bash
-scripts/setup.py -s
-```
-
-Edit the configs in `./configs` or via the `setup.py` command.
-
-___
-
-## Running
-
-From source:
-
-```bash
-bin/start_rogerthat.py
-```
 </details>
 
 ___
