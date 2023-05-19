@@ -26,7 +26,7 @@ docker run -it --rm ^
 --volume "./logs:/logs" ^
 --entrypoint "/bin/bash" ^
 --user root ^
-"theholiestroger/rogerthat:mqtt" ^
+"theholiestroger/rogerthat:latest" ^
 "-l" "-c" "chown -R rogerthat:rogerthat /configs /logs; chown -R 999:999 /data"
 
 REM Run setup script via docker

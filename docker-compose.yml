@@ -47,7 +47,7 @@ services:
       - ./data/certbot/www:/var/www/certbot
   rogerthat:
     build: .
-    image: "theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-mqtt}"
+    image: "theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-latest}"
     stop_signal: SIGINT
     extra_hosts:
       - "host.docker.internal:host-gateway"
