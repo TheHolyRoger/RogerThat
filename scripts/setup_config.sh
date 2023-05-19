@@ -16,6 +16,6 @@ mkdir -p ./data/certbot/www
 
 docker run -it --rm \
 --volume "$(pwd)/configs:/configs" \
-"theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-mqtt}" \
+"theholiestroger/rogerthat:${ROGERTHAT_IMG_NAME:-latest}" \
 ./docker_start_setup_script.sh \
 "$@"
