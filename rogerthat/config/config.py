@@ -3,6 +3,7 @@ import os
 
 from rogerthat.config.loader import config_loader
 from rogerthat.utils.class_helpers import no_setters
+from rogerthat.utils.version_number import get_version_number
 
 _loaded_configs = config_loader()
 _app_config = _loaded_configs.app_config
@@ -15,6 +16,7 @@ _web_config = _loaded_configs.web_config
 class Config(no_setters):
     # Main App
     _project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    _version = get_version_number(_project_root)
     _app_name = _app_config['app_name']
     _debug_mode = _app_config['debug_mode']
 

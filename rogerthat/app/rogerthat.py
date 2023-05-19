@@ -81,7 +81,7 @@ class RogerThat:
         self._mqtt_queue = mqtt_queue.get_instance()
 
     def start_server(self):
-        logger.info("RogerThat startup.")
+        logger.info(f"RogerThat v{Config.get_inst().version} starting.")
         self.setup_loop()
         self.start_queues()
         logger.info("Starting RogerThat Server.")
