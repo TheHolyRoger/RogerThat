@@ -48,6 +48,7 @@ COPY --chown=rogerthat:rogerthat support/generate_self_signed_cert.sh .
 COPY --chown=rogerthat:rogerthat support/wait-for-it.sh .
 COPY --chown=rogerthat:rogerthat LICENSE .
 COPY --chown=rogerthat:rogerthat README.md .
+COPY --chown=rogerthat:rogerthat VERSION .
 
 # activate rogerthat env when entering the CT
 RUN echo "source /home/rogerthat/miniconda3/etc/profile.d/conda.sh && conda activate $(head -1 environment.yml | cut -d' ' -f2)" >> ~/.bashrc
