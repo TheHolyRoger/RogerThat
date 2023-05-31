@@ -24,6 +24,16 @@ class RogerThat:
         self._ev_loop = None
         self._serv_task = None
 
+    @property
+    def loop(self):
+        return self._ev_loop
+
+    def call_soon_threadsafe(self, *args, **kwargs):
+        return self._ev_loop.call_soon_threadsafe(*args, **kwargs)
+
+    async def async_run_in_executor(self, *args, **kwargs):
+        return await self._ev_loop.run_in_executor(*args, **kwargs)
+
     async def Initialise(self):
         logger.info("Initialising database.")
         db_started = await database_init.initialise()
@@ -79,6 +89,7 @@ class RogerThat:
         self._request_queue = request_processing_queue.get_instance()
         logger.info("Starting Broadcast Queues.")
         self._mqtt_queue = mqtt_queue.get_instance()
+        self._mqtt_queue.start()
 
     def start_server(self):
         logger.info(f"RogerThat v{Config.get_inst().version} starting.")
