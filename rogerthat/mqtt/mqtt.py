@@ -69,6 +69,10 @@ class MQTTGateway(Node):
             **kwargs
         )
 
+    @property
+    def health(self):
+        return self._health
+
     def set_ready(self):
         self._gateway_ready.set()
 
@@ -140,7 +144,11 @@ class MQTTGateway(Node):
         while not self._stop_event_async.is_set():
             self._health = await App.get_instance().async_run_in_executor(
                 None, self._check_connections)
-            await asyncio.sleep(period)
+            if self._health:
+                await asyncio.sleep(period)
+            else:
+                logger.warning("MQTT Health check failed. Services should be restarting.")
+                await asyncio.sleep(5.0)
 
     def _stop_health_monitoring_loop(self):
         self._stop_event_async.set()

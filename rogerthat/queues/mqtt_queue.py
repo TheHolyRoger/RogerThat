@@ -75,6 +75,13 @@ class mqtt_queue:
         if not self._mqtt:
             raise Exception("listen_for_broadcasts called but mqtt is not enabled!")
         while True:
+            if not self._mqtt.health:
+                logger.warning("MQTT not ready for broadcast, sleeping 5s before retry.")
+                await asyncio.sleep(5)
+                continue
+
+            msg = None
+
             try:
                 msg = await self._mqtt_queue.get()
                 publisher = self._mqtt.get_publisher_for(msg.topic)
@@ -85,10 +92,12 @@ class mqtt_queue:
                 tb = "".join(traceback.TracebackException.from_exception(e).format())
                 logger.error(f"Error in mqtt_queue: {e}\n{tb}")
 
+                if msg and self._mqtt_queue:
+                    self._mqtt_queue.put_nowait(msg)
+
     def broadcast(self, event):
         if not self._mqtt_queue:
-            logger.error("Cannot broadcast, MQTT not started!")
+            logger.error("Cannot broadcast, MQTT Queue not started!")
             return
-        if self._mqtt:
-            logger.debug("Adding event to MQTT queue.")
-            self._mqtt_queue.put_nowait(event)
+        logger.debug("Adding event to MQTT queue.")
+        self._mqtt_queue.put_nowait(event)
