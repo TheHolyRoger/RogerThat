@@ -25,6 +25,7 @@ class MQTTPublisher:
     def __init__(self,
                  topic: str,
                  mqtt_node: Node):
+        self._initial_connection_completed = False
 
         self._node = mqtt_node
 
@@ -33,10 +34,27 @@ class MQTTPublisher:
         self.publisher = self._node.create_publisher(
             topic=self._topic, msg_type=TradingviewMessage
         )
+        self.publisher.run()
+
+    @property
+    def is_ready(self):
+        return self._initial_connection_completed
+
+    @property
+    def is_connected(self):
+        is_connected = self.publisher._transport.is_connected
+
+        if not self._initial_connection_completed and is_connected:
+            self._initial_connection_completed = True
+
+        return is_connected
 
     def broadcast(self, event: "tradingview_event"):
         logger.debug(f"Broadcasting MQTT event on {self._topic}: {event}")
         self.publisher.publish(event)
+
+    def __del__(self):
+        self.publisher.stop()
 
 
 class MQTTGateway(Node):
@@ -45,6 +63,7 @@ class MQTTGateway(Node):
 
     def __init__(self,
                  *args, **kwargs):
+        self._initial_connection_completed = False
         self._health = False
         self._gateway_ready = asyncio.Event()
         self._stop_event_async = asyncio.Event()
@@ -73,12 +92,13 @@ class MQTTGateway(Node):
     def health(self):
         return self._health
 
-    def set_ready(self):
+    async def async_set_ready(self):
+        await asyncio.sleep(5)
         self._gateway_ready.set()
 
     def get_publisher_for(self, topic: str):
         if topic not in self._topic_publishers:
-            logger.info(f"Starting MQTT Publisher for {topic}")
+            logger.debug(f"Starting MQTT Publisher for {topic}")
             self._topic_publishers[topic] = MQTTPublisher(topic=topic, mqtt_node=self)
         return self._topic_publishers[topic]
 
@@ -100,11 +120,21 @@ class MQTTGateway(Node):
                            loop=App.get_instance().loop)
 
     async def _restart_heartbeat(self):
-        logger.info("Restarting heartbeat thread.")
-        await asyncio.sleep(5)
-        self._init_heartbeat_thread()
-        await asyncio.sleep(5)
-        logger.info("Heartbeat thread restarted.")
+        await asyncio.sleep(3)
+
+        if not self._hb_thread._heartbeat_pub._transport.is_connected:
+            logger.warning("Restarting heartbeat thread.")
+            self._hb_thread.stop()
+            await asyncio.sleep(3)
+
+            try:
+                self._init_heartbeat_thread()
+                await asyncio.sleep(5)
+                logger.warning("Heartbeat thread restarted.")
+
+            except Exception:
+                await asyncio.sleep(5)
+
         self._restart_heartbeat_event_async.clear()
 
     def _check_connections(self) -> bool:
@@ -112,43 +142,57 @@ class MQTTGateway(Node):
 
         # Check heartbeat
         if (
-            not self._restart_heartbeat_event_async.is_set() and
-            self._hb_thread and
-            not self._hb_thread.stopped() and
+            not self._hb_thread or
+            self._hb_thread.stopped() or
             not self._hb_thread._heartbeat_pub._transport.is_connected
         ):
-            self._restart_heartbeat_event_async.set()
-            self._hb_thread.stop()
-            safe_ensure_future(self._restart_heartbeat(),
-                               loop=App.get_instance().loop)
+            if (
+                self._initial_connection_completed and
+                not self._restart_heartbeat_event_async.is_set() and
+                self._hb_thread and (
+                    self._hb_thread.stopped() or
+                    not self._hb_thread._heartbeat_pub._transport.is_connected
+                )
+            ):
+                self._restart_heartbeat_event_async.set()
+                safe_ensure_future(self._restart_heartbeat(),
+                                   loop=App.get_instance().loop)
 
             connected = False
 
         # Check Publishers
-        topic_keys = self._topic_publishers.keys()
+        topic_keys = list(self._topic_publishers.keys())
 
         for topic in topic_keys:
 
-            c = self._topic_publishers[topic]
+            p = self._topic_publishers[topic]
 
-            if not c._transport.is_connected:
-                del self._topic_publishers[topic]
+            if not p.is_connected:
+                if p.is_ready and self._initial_connection_completed:
+                    logger.debug(f"Restarting publisher thread on {topic}.")
+                    del self._topic_publishers[topic]
 
                 connected = False
 
         return connected
 
-    async def _monitor_health_loop(self, period: float = 1.0):
+    async def _monitor_health_loop(self, period: float = 3.0):
         await self._gateway_ready.wait()
-        logger.info("Started MQTT health monitoring.")
+        logger.debug("Started MQTT health monitoring.")
         while not self._stop_event_async.is_set():
             self._health = await App.get_instance().async_run_in_executor(
                 None, self._check_connections)
+
             if self._health:
+                if not self._initial_connection_completed:
+                    self._initial_connection_completed = True
+
                 await asyncio.sleep(period)
             else:
-                logger.warning("MQTT Health check failed. Services should be restarting.")
-                await asyncio.sleep(5.0)
+                if self._initial_connection_completed:
+                    logger.warning("MQTT Health check failed. Services should be restarting.")
+
+                await asyncio.sleep(10.0)
 
     def _stop_health_monitoring_loop(self):
         self._stop_event_async.set()

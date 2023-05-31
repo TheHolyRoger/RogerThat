@@ -28,22 +28,22 @@ class database_init():
 
     @classmethod
     async def create_db(cls):
-        logger.info("Database does not exist yet, creating.")
+        logger.warning("Database does not exist yet, creating.")
         async with db_engine.db().engine_root.connect() as conn:
             await conn.execute(text(f"CREATE DATABASE {Config.get_inst().database_name}"))
         return True
 
     @classmethod
     async def create_tables(cls):
-        logger.info("Creating new or missing db tables.")
+        logger.debug("Creating new or missing db tables.")
         async with db_engine.db().engine.begin() as conn:
             await conn.run_sync(cls._meta.create_all)
-        logger.info("Done creating tables.")
+        logger.info("Done creating missing database tables.")
         return True
 
     @classmethod
     async def initialise(cls):
-        logger.info("Database init.")
+        logger.debug("Database init.")
         try:
             await cls.create_tables()
         except Exception:
@@ -55,17 +55,17 @@ class database_init():
                 logger.error("Failed to connect to SQL database. Check host and port.")
                 return None
 
-        logger.info("Checking alembic.")
+        logger.debug("Checking alembic.")
         try:
             current_revision = fetch_alembic_revision()
         except Exception as e:
             logger.error(f"Alembic exception: {e}")
             current_revision = None
         if not current_revision:
-            logger.info("First time init, stamping revision.")
+            logger.warning("First time init, stamping revision.")
             alembic_cmd.stamp(cls._alembic_cfg, "head")
         else:
-            logger.info("Running alembic migration.")
+            logger.warning("Running alembic migration.")
             alembic_cmd.upgrade(cls._alembic_cfg, "head")
         return True
 

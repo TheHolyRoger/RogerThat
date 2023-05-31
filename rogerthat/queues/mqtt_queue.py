@@ -52,7 +52,7 @@ class mqtt_queue:
             logger.error(e)
             raise e
         if self._is_ready:
-            logger.info("MQTT Gateway is ready.")
+            logger.debug("MQTT Queue is ready.")
 
     def _start_queue_tasks(self):
         if self._mqtt:
@@ -61,7 +61,7 @@ class mqtt_queue:
                 self._listen_for_broadcasts()
             )
             self._is_ready = True
-            self._mqtt.set_ready()
+            safe_ensure_future(self._mqtt.async_set_ready())
 
     def stop(self):
         if self._mqtt_queue_task is not None:
@@ -76,7 +76,9 @@ class mqtt_queue:
             raise Exception("listen_for_broadcasts called but mqtt is not enabled!")
         while True:
             if not self._mqtt.health:
-                logger.warning("MQTT not ready for broadcast, sleeping 5s before retry.")
+                if not self._mqtt_queue.empty():
+                    logger.warning("MQTT not ready for broadcast, sleeping 5s before retry.")
+
                 await asyncio.sleep(5)
                 continue
 
@@ -99,5 +101,6 @@ class mqtt_queue:
         if not self._mqtt_queue:
             logger.error("Cannot broadcast, MQTT Queue not started!")
             return
+
         logger.debug("Adding event to MQTT queue.")
         self._mqtt_queue.put_nowait(event)

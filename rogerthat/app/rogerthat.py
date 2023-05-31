@@ -35,13 +35,13 @@ class RogerThat:
         return await self._ev_loop.run_in_executor(*args, **kwargs)
 
     async def Initialise(self):
-        logger.info("Initialising database.")
+        logger.debug("Initialising database.")
         db_started = await database_init.initialise()
         if not db_started:
             await asyncio.sleep(0.1)
             self.shutdown()
             return
-        logger.info("Finished initialising database.")
+        logger.debug("Finished initialising database.")
         logger.info(splash_msg)
 
     def _signal_handler(self, *_):  # noqa: N803
@@ -87,7 +87,7 @@ class RogerThat:
 
     def start_queues(self):
         self._request_queue = request_processing_queue.get_instance()
-        logger.info("Starting Broadcast Queues.")
+        logger.debug("Starting Broadcast Queues.")
         self._mqtt_queue = mqtt_queue.get_instance()
         self._mqtt_queue.start()
 
