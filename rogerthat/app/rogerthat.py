@@ -24,9 +24,14 @@ class RogerThat:
         self._ev_loop = None
         self._serv_task = None
 
-    @property
-    def loop(self):
-        return self._ev_loop
+    def ensure_future(self, coro, with_timeout=None, *args, **kwargs):
+        return safe_ensure_future(
+            coro,
+            with_timeout=with_timeout,
+            loop=self._ev_loop,
+            *args,
+            **kwargs
+        )
 
     def call_soon_threadsafe(self, *args, **kwargs):
         return self._ev_loop.call_soon_threadsafe(*args, **kwargs)
@@ -83,7 +88,7 @@ class RogerThat:
     def shutdown(self):
         logger.info("Stopping RogerThat Server.")
         self.shutdown_event.set()
-        safe_ensure_future(self.exit_loop(), loop=self._ev_loop)
+        self.ensure_future(self.exit_loop())
 
     def start_queues(self):
         self._request_queue = request_processing_queue.get_instance()

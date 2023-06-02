@@ -11,7 +11,6 @@ from rogerthat.app.delegate import App
 from rogerthat.config.config import Config
 from rogerthat.logging.configure import AsyncioLogger
 from rogerthat.mqtt.messages import TradingviewMessage
-from rogerthat.utils.asyncio_tasks import safe_ensure_future
 
 if TYPE_CHECKING:
     from rogerthat.db.models.tradingview_event import tradingview_event
@@ -116,8 +115,7 @@ class MQTTGateway(Node):
             App.get_instance().call_soon_threadsafe(self._start_health_monitoring_loop)
             return
         self._stop_event_async.clear()
-        safe_ensure_future(self._monitor_health_loop(),
-                           loop=App.get_instance().loop)
+        App.get_instance().ensure_future(self._monitor_health_loop())
 
     async def _restart_heartbeat(self):
         await asyncio.sleep(3)
@@ -155,8 +153,7 @@ class MQTTGateway(Node):
                 )
             ):
                 self._restart_heartbeat_event_async.set()
-                safe_ensure_future(self._restart_heartbeat(),
-                                   loop=App.get_instance().loop)
+                App.get_instance().ensure_future(self._restart_heartbeat())
 
             connected = False
 
