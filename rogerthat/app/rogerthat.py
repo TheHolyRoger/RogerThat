@@ -24,14 +24,29 @@ class RogerThat:
         self._ev_loop = None
         self._serv_task = None
 
+    def ensure_future(self, coro, with_timeout=None, *args, **kwargs):
+        return safe_ensure_future(
+            coro,
+            with_timeout=with_timeout,
+            loop=self._ev_loop,
+            *args,
+            **kwargs
+        )
+
+    def call_soon_threadsafe(self, *args, **kwargs):
+        return self._ev_loop.call_soon_threadsafe(*args, **kwargs)
+
+    async def async_run_in_executor(self, *args, **kwargs):
+        return await self._ev_loop.run_in_executor(*args, **kwargs)
+
     async def Initialise(self):
-        logger.info("Initialising database.")
+        logger.debug("Initialising database.")
         db_started = await database_init.initialise()
         if not db_started:
             await asyncio.sleep(0.1)
             self.shutdown()
             return
-        logger.info("Finished initialising database.")
+        logger.debug("Finished initialising database.")
         logger.info(splash_msg)
 
     def _signal_handler(self, *_):  # noqa: N803
@@ -73,12 +88,13 @@ class RogerThat:
     def shutdown(self):
         logger.info("Stopping RogerThat Server.")
         self.shutdown_event.set()
-        safe_ensure_future(self.exit_loop(), loop=self._ev_loop)
+        self.ensure_future(self.exit_loop())
 
     def start_queues(self):
         self._request_queue = request_processing_queue.get_instance()
-        logger.info("Starting Broadcast Queues.")
+        logger.debug("Starting Broadcast Queues.")
         self._mqtt_queue = mqtt_queue.get_instance()
+        self._mqtt_queue.start()
 
     def start_server(self):
         logger.info(f"RogerThat v{Config.get_inst().version} starting.")
